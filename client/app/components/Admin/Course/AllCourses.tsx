@@ -65,7 +65,9 @@ const AllCourses = (props: Props) => {
       renderCell: (params: any) => (
         <Button
           onClick={() => {
+         
             router.push(`/admin/yearfetch/${params.row.id}`); // Use router.push
+            console.log("Course ID for View Year:", params.row.id);
           }}
         >
           View Year

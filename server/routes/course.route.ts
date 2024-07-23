@@ -98,7 +98,8 @@ import {
   DeleteQuestion,
   UpdateQuestInSubject,
   GetYearsOfCourse,
-  GetAllSubjects
+  GetAllSubjects,
+  GetQuestions
  
 } from "../controllers/course.controller";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
@@ -197,7 +198,8 @@ courseRouter.get(
  GetAllSubjects
 );
 
-
+//get question
+courseRouter.get('/course/:courseId/year/:yearId/subject/:subjectId/questions', isAutheticated, authorizeRoles("admin"), GetQuestions);
 courseRouter.put(
   "/course/:courseId/year/:yearId/subject/:subjectId/question/:questionId",
   isAutheticated,

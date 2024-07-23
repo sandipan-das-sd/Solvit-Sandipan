@@ -330,12 +330,14 @@ export const coursesApi = apiSlice.injectEndpoints({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}`,
         method: 'PUT',
         body: { name },
+        credentials: 'include',
       }),
     }),
     deleteSubject: builder.mutation({
       query: ({ courseId, yearId, subjectId }) => ({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}`,
         method: 'DELETE',
+        credentials: 'include',
       }),
     }),
     addQuestionToSubject: builder.mutation({
@@ -343,19 +345,31 @@ export const coursesApi = apiSlice.injectEndpoints({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question`,
         method: 'POST',
         body: { text, answers },
+        credentials: 'include',
       }),
+    }),
+
+    getQuestionsToSubject: builder.query({
+      query: ({ courseId, yearId, subjectId }) => ({
+        url: `course/${courseId}/year/${yearId}/subject/${subjectId}/questions`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+     
     }),
     updateQuestionInSubject: builder.mutation({
       query: ({ courseId, yearId, subjectId, questionId, text, answers }) => ({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
         method: 'PUT',
         body: { text, answers },
+        credentials: 'include',
       }),
     }),
     deleteQuestion: builder.mutation({
       query: ({ courseId, yearId, subjectId, questionId }) => ({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
         method: 'DELETE',
+        credentials: 'include',
       }),
     }),
   }),
@@ -384,4 +398,5 @@ export const {
   useAddQuestionToSubjectMutation,
   useUpdateQuestionInSubjectMutation,
   useDeleteQuestionMutation,
+  useGetQuestionsToSubjectQuery,
 } = coursesApi;

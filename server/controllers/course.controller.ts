@@ -937,6 +937,8 @@ export const GetAllSubjects = CatchAsyncError(async (req: Request, res: Response
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 500));
   }
+
+  
 });
 // Adding a Question to a Subject
 
@@ -1015,6 +1017,65 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
 
   } catch (error: any) {
     console.error(error); // Improved error logging
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+//get the question
+export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { courseId, yearId, subjectId } = req.params;
+
+    // Fetch the course
+    const course = await CourseModel.findById(courseId)
+      .populate({
+        path: 'years',
+        match: { _id: yearId },
+        populate: {
+          path: 'subjects',
+          match: { _id: subjectId },
+          populate: {
+            path: 'questions'
+          }
+        }
+      });
+
+    if (!course) {
+      return res.status(404).json({ success: false, message: "Course not found" });
+    }
+
+    const year = course.years.find(y => y._id.toString() === yearId);
+    if (!year) {
+      return res.status(404).json({ success: false, message: "Year not found" });
+    }
+
+    const subject = year.subjects.find(s => s._id.toString() === subjectId);
+    if (!subject) {
+      return res.status(404).json({ success: false, message: "Subject not found" });
+    }
+
+    const questions = subject.questions.map(question => ({
+      _id: question._id,
+      type: question.type,
+      content: question.content,
+      answers: question.answers.map(answer => ({
+        _id: answer._id,
+        type: answer.type,
+        content: answer.content,
+        isCorrect: answer.isCorrect
+      })),
+      likeCount: question.likeCount || 0,
+      dislikeCount: question.dislikeCount || 0,
+      vimeoLink: question.vimeoLink || ''
+    }));
+
+    res.status(200).json({
+      success: true,
+      questions
+    });
+
+  } catch (error: any) {
+    console.error(error);
     return next(new ErrorHandler(error.message, 500));
   }
 });
