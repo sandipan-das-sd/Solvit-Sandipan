@@ -237,10 +237,18 @@ import {
   useUpdateQuestionInSubjectMutation,
   useDeleteQuestionMutation,
 } from "@/redux/features/courses/coursesApi";
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  Radio,
+  FormControlLabel,
+} from "@mui/material";
 
 const AddQuestion = () => {
   const params = useParams();
   const { courseId, yearId, subjectId } = params;
+  const [questionType, setQuestionType] = useState("text"); // Initialize state for questionType
 
   const [questionText, setQuestionText] = useState("");
   const [questionImage, setQuestionImage] = useState(null);
@@ -258,7 +266,10 @@ const AddQuestion = () => {
   const [deleteQuestion] = useDeleteQuestionMutation();
 
   const handleAddAnswer = () => {
-    setAnswers([...answers, { content: "", isCorrect: false, image: null }]);
+    setAnswers([
+      ...answers,
+      { type: "text", content: "", image: "", isCorrect: false },
+    ]);
   };
 
   const handleAnswerChange = (index, field, value) => {
@@ -293,44 +304,49 @@ const AddQuestion = () => {
 
   const handleSubmit = async () => {
     if (!questionText.trim()) {
-        alert('Question text is required');
-        return;
+      alert("Question text is required");
+      return;
     }
 
     try {
-        const questionData = {
-            courseId,
-            yearId,
-            subjectId,
-            text: { type: questionImage ? 'image' : 'text', content: questionImage || questionText },
-            answers: answers.map(answer => ({
-                type: answer.image ? 'image' : 'text',
-                content: answer.image || answer.content,
-                isCorrect: answer.isCorrect
-            })),
-            vimeoLink
-        };
+      const questionData = {
+        courseId,
+        yearId,
+        subjectId,
+        text: {
+          type: questionImage ? "image" : "text",
+          content: questionImage || questionText,
+        },
+        answers: answers.map((answer) => ({
+          type: answer.image ? "image" : "text",
+          content: answer.image || answer.content,
+          isCorrect: answer.isCorrect,
+        })),
+        vimeoLink,
+      };
 
-        if (editingQuestionId) {
-            await editQuestion({ questionId: editingQuestionId, ...questionData }).unwrap();
-            setEditingQuestionId(null);
-        } else {
-            await addQuestionToSubject(questionData).unwrap();
-        }
+      if (editingQuestionId) {
+        await editQuestion({
+          questionId: editingQuestionId,
+          ...questionData,
+        }).unwrap();
+        setEditingQuestionId(null);
+      } else {
+        await addQuestionToSubject(questionData).unwrap();
+      }
 
-        // Reset state
-        setQuestionText('');
-        setQuestionImage(null);
-        setAnswers([{ content: '', isCorrect: false, image: null }]);
-        setVimeoLink('');
-        setIsEditing(false);
+      // Reset state
+      setQuestionText("");
+      setQuestionImage(null);
+      setAnswers([{ content: "", isCorrect: false, image: null }]);
+      setVimeoLink("");
+      setIsEditing(false);
 
-        refetchQuestions();
+      refetchQuestions();
     } catch (error) {
-        console.error('Error submitting question:', error);
+      console.error("Error submitting question:", error);
     }
-};
-
+  };
 
   const handleEdit = (question) => {
     setEditingQuestionId(question._id);
@@ -368,45 +384,90 @@ const AddQuestion = () => {
       <Typography variant="h4" mb="20px">
         Add Question
       </Typography>
-      <TextField
-        fullWidth
-        label="Question Text"
-        value={questionText}
-        onChange={(e) => setQuestionText(e.target.value)}
-        margin="normal"
-      />
-      <input
-        type="file"
-        onChange={(e) => handleImageUpload(e.target.files[0], "question")}
-      />
+
+      <FormControl component="fieldset" margin="normal">
+        <FormLabel component="legend">Question Type</FormLabel>
+        <RadioGroup
+          row
+          value={questionType}
+          onChange={(e) => setQuestionType(e.target.value)}
+        >
+          <FormControlLabel value="text" control={<Radio />} label="Text" />
+          <FormControlLabel value="image" control={<Radio />} label="Image" />
+        </RadioGroup>
+      </FormControl>
+
+      {questionType === "text" && (
+        <TextField
+          fullWidth
+          label="Question Text"
+          value={questionText}
+          onChange={(e) => setQuestionText(e.target.value)}
+          margin="normal"
+        />
+      )}
+
+      {questionType === "image" && (
+        <input
+          type="file"
+          onChange={(e) => handleImageUpload(e.target.files[0], "question")}
+        />
+      )}
+
       {questionImage && (
         <img src={questionImage} alt="Question" style={{ maxWidth: "200px" }} />
       )}
 
       {answers.map((answer, index) => (
         <Box key={index} display="flex" alignItems="center" mb={2}>
-          <TextField
-            fullWidth
-            label={`Answer ${index + 1}`}
-            value={answer.content}
-            onChange={(e) =>
-              handleAnswerChange(index, "content", e.target.value)
-            }
-            margin="normal"
-          />
-          <input
-            type="file"
-            onChange={(e) =>
-              handleImageUpload(e.target.files[0], "answer", index)
-            }
-          />
-          {answer.image && (
-            <img
-              src={answer.image}
-              alt={`Answer ${index + 1}`}
-              style={{ maxWidth: "100px" }}
+          <FormControl component="fieldset" margin="normal">
+            <FormLabel component="legend">Answer {index + 1} Type</FormLabel>
+            <RadioGroup
+              row
+              value={answer.type}
+              onChange={(e) =>
+                handleAnswerChange(index, "type", e.target.value)
+              }
+            >
+              <FormControlLabel value="text" control={<Radio />} label="Text" />
+              <FormControlLabel
+                value="image"
+                control={<Radio />}
+                label="Image"
+              />
+            </RadioGroup>
+          </FormControl>
+
+          {answer.type === "text" && (
+            <TextField
+              fullWidth
+              label={`Answer ${index + 1}`}
+              value={answer.content}
+              onChange={(e) =>
+                handleAnswerChange(index, "content", e.target.value)
+              }
+              margin="normal"
             />
           )}
+
+          {answer.type === "image" && (
+            <>
+              <input
+                type="file"
+                onChange={(e) =>
+                  handleImageUpload(e.target.files[0], "answer", index)
+                }
+              />
+              {answer.image && (
+                <img
+                  src={answer.image}
+                  alt={`Answer ${index + 1}`}
+                  style={{ maxWidth: "100px" }}
+                />
+              )}
+            </>
+          )}
+
           <Button
             variant={answer.isCorrect ? "contained" : "outlined"}
             onClick={() =>
@@ -418,6 +479,7 @@ const AddQuestion = () => {
           </Button>
         </Box>
       ))}
+
       <Button onClick={handleAddAnswer}>Add Answer</Button>
 
       <TextField
@@ -452,7 +514,6 @@ const AddQuestion = () => {
             {questionsData?.questions.map((question) => (
               <TableRow key={question._id}>
                 <TableCell>
-                  {console.log("Question Text:", question.text?.content)}
                   {question.text?.type === "image" ? (
                     <img
                       src={question.text?.content ?? ""}
@@ -500,17 +561,39 @@ const AddQuestion = () => {
       <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
         <DialogTitle>Edit Question</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Question Text"
-            value={questionText}
-            onChange={(e) => setQuestionText(e.target.value)}
-            margin="normal"
-          />
-          <input
-            type="file"
-            onChange={(e) => handleImageUpload(e.target.files[0], "question")}
-          />
+          <FormControl component="fieldset" margin="normal">
+            <FormLabel component="legend">Question Type</FormLabel>
+            <RadioGroup
+              row
+              value={questionType}
+              onChange={(e) => setQuestionType(e.target.value)}
+            >
+              <FormControlLabel value="text" control={<Radio />} label="Text" />
+              <FormControlLabel
+                value="image"
+                control={<Radio />}
+                label="Image"
+              />
+            </RadioGroup>
+          </FormControl>
+
+          {questionType === "text" && (
+            <TextField
+              fullWidth
+              label="Question Text"
+              value={questionText}
+              onChange={(e) => setQuestionText(e.target.value)}
+              margin="normal"
+            />
+          )}
+
+          {questionType === "image" && (
+            <input
+              type="file"
+              onChange={(e) => handleImageUpload(e.target.files[0], "question")}
+            />
+          )}
+
           {questionImage && (
             <img
               src={questionImage}
@@ -521,28 +604,60 @@ const AddQuestion = () => {
 
           {answers.map((answer, index) => (
             <Box key={index} display="flex" alignItems="center" mb={2}>
-              <TextField
-                fullWidth
-                label={`Answer ${index + 1}`}
-                value={answer.content}
-                onChange={(e) =>
-                  handleAnswerChange(index, "content", e.target.value)
-                }
-                margin="normal"
-              />
-              <input
-                type="file"
-                onChange={(e) =>
-                  handleImageUpload(e.target.files[0], "answer", index)
-                }
-              />
-              {answer.image && (
-                <img
-                  src={answer.image}
-                  alt={`Answer ${index + 1}`}
-                  style={{ maxWidth: "100px" }}
+              <FormControl component="fieldset" margin="normal">
+                <FormLabel component="legend">
+                  Answer {index + 1} Type
+                </FormLabel>
+                <RadioGroup
+                  row
+                  value={answer.type}
+                  onChange={(e) =>
+                    handleAnswerChange(index, "type", e.target.value)
+                  }
+                >
+                  <FormControlLabel
+                    value="text"
+                    control={<Radio />}
+                    label="Text"
+                  />
+                  <FormControlLabel
+                    value="image"
+                    control={<Radio />}
+                    label="Image"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              {answer.type === "text" && (
+                <TextField
+                  fullWidth
+                  label={`Answer ${index + 1}`}
+                  value={answer.content}
+                  onChange={(e) =>
+                    handleAnswerChange(index, "content", e.target.value)
+                  }
+                  margin="normal"
                 />
               )}
+
+              {answer.type === "image" && (
+                <>
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      handleImageUpload(e.target.files[0], "answer", index)
+                    }
+                  />
+                  {answer.image && (
+                    <img
+                      src={answer.image}
+                      alt={`Answer ${index + 1}`}
+                      style={{ maxWidth: "100px" }}
+                    />
+                  )}
+                </>
+              )}
+
               <Button
                 variant={answer.isCorrect ? "contained" : "outlined"}
                 onClick={() =>
@@ -554,6 +669,7 @@ const AddQuestion = () => {
               </Button>
             </Box>
           ))}
+
           <Button onClick={handleAddAnswer}>Add Answer</Button>
 
           <TextField
