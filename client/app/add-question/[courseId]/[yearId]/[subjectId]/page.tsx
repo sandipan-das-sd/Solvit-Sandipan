@@ -281,7 +281,7 @@ const AddQuestion = () => {
   const handleImageUpload = async (file, type, index = -1) => {
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("upload_preset", "your_cloudinary_upload_preset");
+    formData.append("upload_preset", "imageupload");
 
     try {
       const response = await fetch(
@@ -302,21 +302,64 @@ const AddQuestion = () => {
     }
   };
 
+  // const handleSubmit = async () => {
+  //   if (!questionText.trim()) {
+  //     alert("Question text is required");
+  //     return;
+  //   }
+
+  //   try {
+     
+  //     const questionData = {
+  //       courseId,
+  //       yearId,
+  //       subjectId,
+  //       text: {
+  //         type: questionImage ? "image" : "text",
+  //         content: questionImage || questionText,
+  //       },
+  //       answers: answers.map((answer) => ({
+  //         type: answer.image ? "image" : "text",
+  //         content: answer.image || answer.content, 
+  //         isCorrect: answer.isCorrect,
+  //       })),
+  //       vimeoLink,
+  //     };
+
+  //     console.log(questionData);
+  //     if (editingQuestionId) {
+  //       await editQuestion({
+  //         questionId: editingQuestionId,
+  //         ...questionData,
+  //       }).unwrap();
+  //       setEditingQuestionId(null);
+  //     } else {
+  //       await addQuestionToSubject(questionData).unwrap();
+  //     }
+
+  //     // Reset state
+  //     setQuestionText("");
+  //     setQuestionImage(null);
+  //     setAnswers([{ content: "", isCorrect: false, image: null }]);
+  //     setVimeoLink("");
+  //     setIsEditing(false);
+
+  //     refetchQuestions();
+  //   } catch (error) {
+  //     console.error("Error submitting question:", error);
+  //   }
+  // };
+  
   const handleSubmit = async () => {
-    if (!questionText.trim()) {
-      alert("Question text is required");
+    if (!questionText.trim() && !questionImage) {
+      alert("Question content is required");
       return;
     }
 
     try {
       const questionData = {
-        courseId,
-        yearId,
-        subjectId,
-        text: {
-          type: questionImage ? "image" : "text",
-          content: questionImage || questionText,
-        },
+        type: questionImage ? "image" : "text",
+        content: questionImage || questionText,
         answers: answers.map((answer) => ({
           type: answer.image ? "image" : "text",
           content: answer.image || answer.content,
@@ -332,13 +375,18 @@ const AddQuestion = () => {
         }).unwrap();
         setEditingQuestionId(null);
       } else {
-        await addQuestionToSubject(questionData).unwrap();
+        await addQuestionToSubject({
+          courseId,
+          yearId,
+          subjectId,
+          ...questionData,
+        }).unwrap();
       }
 
       // Reset state
       setQuestionText("");
       setQuestionImage(null);
-      setAnswers([{ content: "", isCorrect: false, image: null }]);
+      setAnswers([{ type: "text", content: "", isCorrect: false, image: null }]);
       setVimeoLink("");
       setIsEditing(false);
 
@@ -481,7 +529,7 @@ const AddQuestion = () => {
       ))}
 
       <Button onClick={handleAddAnswer}>Add Answer</Button>
-
+          <h1> Add Video Link here </h1>
       <TextField
         fullWidth
         label="Vimeo Link"
@@ -521,7 +569,7 @@ const AddQuestion = () => {
                       style={{ maxWidth: "100px" }}
                     />
                   ) : (
-                    question.text?.content ?? "No text available"
+                    question.content ?? "No text available"
                   )}
                 </TableCell>
                 <TableCell>
@@ -557,6 +605,7 @@ const AddQuestion = () => {
         </Table>
       </TableContainer>
 
+      
       {/* Edit Question Dialog */}
       <Dialog open={isEditing} onClose={() => setIsEditing(false)}>
         <DialogTitle>Edit Question</DialogTitle>
@@ -692,3 +741,6 @@ const AddQuestion = () => {
 };
 
 export default AddQuestion;
+
+
+
