@@ -521,7 +521,7 @@ const AddQuestion = () => {
                       style={{ maxWidth: "100px" }}
                     />
                   ) : (
-                    question.text?.content ?? "No text available"
+                    question.content ?? "No text available"
                   )}
                 </TableCell>
                 <TableCell>
