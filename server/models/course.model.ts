@@ -148,19 +148,22 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
 
 // Interfaces
-export interface IAnswer extends Document {
-  type: string; // "text", "image", "video", "link"
-  content: string;
-  likes: number;
-  dislikes: number;
-  // videoFiled:String
-}
 
 export interface IQuestion extends Document {
-  type: string;
-  content: string;
-  answers: IAnswer[];
+  questionText: String,
+  questionImage: {
+    url: String,
+    public_id: String,
+  },
+  answerText: String,
+  answerImage: {
+    url: String,
+    public_id: String,
+  },
+  videoLink?: string;
+  videoId?: string; // Extracted video ID
 }
+
 
 export interface ISubject extends Document {
   name: string;
@@ -223,49 +226,25 @@ export interface ICourse extends Document {
 }
 
 // Schemas
-const answerSchema = new Schema<IAnswer>({
-  type: {
-    type: String,
-    enum: ["text", "image", "video", "link"],
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-  // videoFiled: {
-  //   type: String,
-
-
-  // },
-
-  likes: {
-    type: Number,
-    default: 0,
-  },
-  dislikes: {
-    type: Number,
-    default: 0,
-  },
-});
 
 const questionSchema = new Schema<IQuestion>({
-  type: {
-    type: String,
-    enum: ["text", "image", "video", "link"],
-    required: true,
+  questionText: String,
+  questionImage: {
+    url: String,
+    public_id: String,
   },
-  content: {
-    type: String,
-    required: true,
+  answerText: String,
+  answerImage: {
+    url: String,
+    public_id: String,
   },
-  answers: [answerSchema],
+  videoLink:String,
+  videoId:String,
 });
-
 const subjectSchema = new Schema<ISubject>({
   name: {
     type: String,
-    required: true,
+    
   },
   questions: [questionSchema],
 });

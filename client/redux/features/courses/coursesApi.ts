@@ -341,10 +341,10 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
     addQuestionToSubject: builder.mutation({
-      query: ({ courseId, yearId, subjectId, text, answers }) => ({
+      query: ({ courseId, yearId, subjectId, text, answers, videoExplanation }) => ({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question`,
         method: 'POST',
-        body: { text, answers },
+        body: {  text, answers, videoExplanation },
         credentials: 'include',
       }),
     }),
