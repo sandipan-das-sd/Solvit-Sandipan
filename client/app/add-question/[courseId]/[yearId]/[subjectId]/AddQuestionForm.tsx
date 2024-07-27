@@ -1,3 +1,5 @@
+// supprt basic
+ 
 
 // "use client";
 // import React, { useState } from 'react';
@@ -264,6 +266,12 @@
 // };
 
 // export default AddQuestionForm;
+
+
+
+//sandipan edit
+
+
 "use client";
 import React, { useState } from 'react';
 import Modal from 'react-modal';
