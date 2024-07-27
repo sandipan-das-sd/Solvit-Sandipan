@@ -359,6 +359,8 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Image from 'next/image';
+
 import './AddQuestion.css';
 import {
     useAddQuestionToSubjectMutation,
@@ -584,11 +586,19 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                                     />
                                 )} */}
                                 {questionImage && typeof questionImage === 'object' && (
-                                    <img
+                                    // <img
+                                    //     src={URL.createObjectURL(questionImage)}
+                                    //     alt="Question Preview"
+                                    //     className="mt-2 h-16 w-16 object-cover"
+                                    // />
+                                    <Image
                                         src={URL.createObjectURL(questionImage)}
                                         alt="Question Preview"
-                                        className="mt-2 h-16 w-16 object-cover"
+                                        width={64} // equivalent to h-16
+                                        height={64} // equivalent to w-16
+                                        className="mt-2 object-cover"
                                     />
+
                                 )}
 
 
@@ -628,9 +638,11 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                                     className="mt-1 block w-full border border-gray-300 rounded p-2"
                                 />
                                 {answerImage && (
-                                    <img
+                                    <Image
                                         src={URL.createObjectURL(answerImage)}
                                         alt="Answer Preview"
+                                        width={64} // equivalent to h-16
+                                        height={64} // equivalent to w-16
                                         className="mt-2 h-16 w-16 object-cover"
                                     />
                                 )}
