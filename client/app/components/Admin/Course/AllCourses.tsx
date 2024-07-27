@@ -39,7 +39,8 @@ const AllCourses = (props: Props) => {
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "title", headerName: "Course Title", flex: 1 },
+    { field: "title", headerName: "Subject Title", flex: 1 },
+    { field: "exam", headerName: "Exam Title", flex: 1 },
     { field: "ratings", headerName: "Ratings", flex: 0.5 },
     { field: "purchased", headerName: "Purchased", flex: 0.5 },
     { field: "created_at", headerName: "Created At", flex: 0.5 },
@@ -105,6 +106,7 @@ const AllCourses = (props: Props) => {
     ? data.courses.map((item: any) => ({
       id: item._id,
       title: item.name,
+      exam:item.tags,
       ratings: item.ratings,
       purchased: item.purchased,
       created_at: format(item.createdAt),

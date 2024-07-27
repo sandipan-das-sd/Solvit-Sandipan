@@ -5,7 +5,7 @@ import Heading from "@/app/utils/Heading";
 import React from "react";
 import AdminSidebar from "../../components/Admin/Sidebar/AdminSidebar";
 import AllCourses from "../../components/Admin/Course/AllCourses";
-import YearFetch from "@/app/components/Admin/Course/YearFetch";
+
 
 type Props = {};
 
