@@ -1,12 +1,18 @@
-// supprt basic
- 
+
+
 
 // "use client";
 // import React, { useState } from 'react';
 // import Modal from 'react-modal';
-
-// import './AddQuestion.css'
-// import { useAddQuestionToSubjectMutation, useGetQuestionsToSubjectQuery } from './../../../../../redux/features/courses/coursesApi';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+// import './AddQuestion.css';
+// import {
+//     useAddQuestionToSubjectMutation,
+//     useGetQuestionsToSubjectQuery,
+//     useUpdateQuestionInSubjectMutation,
+//     useDeleteQuestionMutation
+// } from './../../../../../redux/features/courses/coursesApi';
 
 // interface AddQuestionFormProps {
 //     courseId: string;
@@ -23,6 +29,8 @@
 //     const [questionType, setQuestionType] = useState('text');
 //     const [answerType, setAnswerType] = useState('text');
 //     const [isFormVisible, setIsFormVisible] = useState(false);
+//     const [isEditMode, setIsEditMode] = useState(false);
+//     const [editQuestionId, setEditQuestionId] = useState<string | null>(null);
 
 //     const [addQuestionToSubject, { isLoading: isAdding }] = useAddQuestionToSubjectMutation();
 //     const { data: questionsData, refetch: refetchQuestions, isFetching: isFetchingQuestions } = useGetQuestionsToSubjectQuery({
@@ -30,6 +38,8 @@
 //         yearId,
 //         subjectId,
 //     });
+//     const [updateQuestionInSubject, { isLoading: isUpdating }] = useUpdateQuestionInSubjectMutation();
+//     const [deleteQuestion, { isLoading: isDeleting }] = useDeleteQuestionMutation();
 
 //     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setImage: React.Dispatch<React.SetStateAction<File | null>>) => {
 //         const file = e.target.files?.[0];
@@ -42,20 +52,45 @@
 //         e.preventDefault();
 
 //         try {
-//             await addQuestionToSubject({
-//                 courseId,
-//                 yearId,
-//                 subjectId,
-//                 questionText,
-//                 answerText,
-//                 videoLink,
-//                 questionImage,
-//                 answerImage,
-//             }).unwrap();
-//             refetchQuestions(); // Fetch questions after adding a new one
+//             if (isEditMode && editQuestionId) {
+//                 await updateQuestionInSubject({
+//                     courseId,
+//                     yearId,
+//                     subjectId,
+//                     questionId: editQuestionId,
+//                     questionText,
+//                     answerText,
+//                     videoLink,
+//                     questionImage,
+//                     answerImage,
+//                 }).unwrap();
+//                 toast.success('Question updated successfully!');
+//             } else {
+//                 await addQuestionToSubject({
+//                     courseId,
+//                     yearId,
+//                     subjectId,
+//                     questionText,
+//                     answerText,
+//                     videoLink,
+//                     questionImage,
+//                     answerImage,
+//                 }).unwrap();
+//                 toast.success('Question added successfully!');
+//             }
+//             refetchQuestions(); // Fetch questions after adding/updating
 //             setIsFormVisible(false); // Close the modal after submitting
+//             // Clear input fields after successful submission
+//             setQuestionText('');
+//             setAnswerText('');
+//             setVideoLink('');
+//             setQuestionImage(null);
+//             setAnswerImage(null);
+//             setIsEditMode(false);
+//             setEditQuestionId(null);
 //         } catch (error) {
-//             console.error('Error adding question:', error);
+//             console.error('Error adding/updating question:', error);
+//             toast.error('Error adding/updating question');
 //         }
 //     };
 
@@ -64,26 +99,60 @@
 //     };
 
 //     const handleEditQuestion = (questionId: string) => {
-//         // Add your edit question logic here
+//         const question = questionsData?.questions.find(q => q._id === questionId);
+//         if (question) {
+//             setQuestionText(question.questionText);
+//             setAnswerText(question.answerText);
+            
+//             setVideoLink(question.videoLink);
+//             setQuestionType(question.questionImage ? 'image' : 'text');
+//             setAnswerType(question.answerImage ? 'image' : 'text');
+//             setEditQuestionId(questionId);
+//             setIsEditMode(true);
+//             setIsFormVisible(true);
+//         }
 //     };
 
-//     const handleDeleteQuestion = (questionId: string) => {
-//         // Add your delete question logic here
+//     const handleDeleteQuestion = async (questionId: string) => {
+//         try {
+//             await deleteQuestion({
+//                 courseId,
+//                 yearId,
+//                 subjectId,
+//                 questionId,
+//             }).unwrap();
+//             toast.success('Question deleted successfully!');
+//             refetchQuestions(); // Fetch questions after deleting
+//         } catch (error) {
+//             console.error('Error deleting question:', error);
+//             toast.error('Error deleting question');
+//         }
 //     };
 
 //     const handleInsertUp = (index: number) => {
-//         // Add your insert up logic here
+//         if (index > 0) {
+//             const newQuestions = [...(questionsData?.questions || [])];
+//             [newQuestions[index], newQuestions[index - 1]] = [newQuestions[index - 1], newQuestions[index]];
+//             // Assuming there's an API or method to update the order of questions
+//             refetchQuestions();
+//         }
 //     };
 
 //     const handleInsertDown = (index: number) => {
-//         // Add your insert down logic here
+//         if (index < (questionsData?.questions.length || 0) - 1) {
+//             const newQuestions = [...(questionsData?.questions || [])];
+//             [newQuestions[index], newQuestions[index + 1]] = [newQuestions[index + 1], newQuestions[index]];
+//             // Assuming there's an API or method to update the order of questions
+//             refetchQuestions();
+//         }
 //     };
 
 //     return (
 //         <div className="p-4 max-w-lg mx-auto bg-white rounded shadow">
+//             <ToastContainer />
 //             <button
 //                 onClick={toggleFormVisibility}
-//                 className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mb-4"
+//                 className="w-full bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-4 rounded hover:from-blue-500 hover:to-blue-700 mb-8"
 //             >
 //                 {isFormVisible ? 'Close Form' : 'Add Question'}
 //             </button>
@@ -96,7 +165,7 @@
 //                 overlayClassName="modal-overlay"
 //             >
 //                 <div className="p-4 max-w-lg mx-auto bg-white rounded shadow">
-//                     <h1 className="text-2xl font-bold mb-4">Add a Question</h1>
+//                     <h1 className="text-2xl font-bold mb-4">{isEditMode ? 'Edit' : 'Add'} a Question</h1>
 //                     <form onSubmit={handleSubmit} className="space-y-4">
 //                         <div>
 //                             <label className="block text-sm font-medium text-gray-700">Question Type</label>
@@ -130,6 +199,13 @@
 //                                     onChange={(e) => handleImageChange(e, setQuestionImage)}
 //                                     className="mt-1 block w-full border border-gray-300 rounded p-2"
 //                                 />
+//                                 {questionImage && (
+//                                     <img
+//                                         src={URL.createObjectURL(questionImage)}
+//                                         alt="Question Preview"
+//                                         className="mt-2 h-16 w-16 object-cover"
+//                                     />
+//                                 )}
 //                             </div>
 //                         ) : null}
 
@@ -165,6 +241,13 @@
 //                                     onChange={(e) => handleImageChange(e, setAnswerImage)}
 //                                     className="mt-1 block w-full border border-gray-300 rounded p-2"
 //                                 />
+//                                 {answerImage && (
+//                                     <img
+//                                         src={URL.createObjectURL(answerImage)}
+//                                         alt="Answer Preview"
+//                                         className="mt-2 h-16 w-16 object-cover"
+//                                     />
+//                                 )}
 //                             </div>
 //                         ) : null}
 
@@ -180,10 +263,10 @@
 
 //                         <button
 //                             type="submit"
-//                             className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-//                             disabled={isAdding}
+//                             className="w-full bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-4 rounded hover:from-blue-500 hover:to-blue-700"
+//                             disabled={isAdding || isUpdating}
 //                         >
-//                             {isAdding ? 'Adding...' : 'Add Question'}
+//                             {isAdding || isUpdating ? 'Saving...' : isEditMode ? 'Update Question' : 'Add Question'}
 //                         </button>
 //                     </form>
 //                 </div>
@@ -208,12 +291,12 @@
 //                         </thead>
 //                         <tbody>
 //                             {questionsData?.questions.map((question, index) => (
-//                                 <tr key={question._id}>
+//                                 <tr key={question._id} className="even:bg-gray-50">
 //                                     <td className="border px-4 py-2">{index + 1}</td>
 //                                     <td className="border px-4 py-2">{question.questionText}</td>
 //                                     <td className="border px-4 py-2">
 //                                         {question.questionImage?.url && (
-//                                             <img src={question.questionImage.url} alt="Question" className="h-16 w-16 object-cover" />
+//                                             <img src={question.questionImage.url} alt="Question" className="h-18  w-24 object-cover" />
 //                                         )}
 //                                     </td>
 //                                     <td className="border px-4 py-2">{question.answerText}</td>
@@ -269,7 +352,6 @@
 
 
 
-//sandipan edit
 
 
 "use client";
@@ -277,9 +359,13 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import './AddQuestion.css';
-import { useAddQuestionToSubjectMutation, useGetQuestionsToSubjectQuery } from './../../../../../redux/features/courses/coursesApi';
+import {
+    useAddQuestionToSubjectMutation,
+    useGetQuestionsToSubjectQuery,
+    useUpdateQuestionInSubjectMutation,
+    useDeleteQuestionMutation
+} from './../../../../../redux/features/courses/coursesApi';
 
 interface AddQuestionFormProps {
     courseId: string;
@@ -296,6 +382,8 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
     const [questionType, setQuestionType] = useState('text');
     const [answerType, setAnswerType] = useState('text');
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editQuestionId, setEditQuestionId] = useState<string | null>(null);
 
     const [addQuestionToSubject, { isLoading: isAdding }] = useAddQuestionToSubjectMutation();
     const { data: questionsData, refetch: refetchQuestions, isFetching: isFetchingQuestions } = useGetQuestionsToSubjectQuery({
@@ -303,6 +391,8 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
         yearId,
         subjectId,
     });
+    const [updateQuestionInSubject, { isLoading: isUpdating }] = useUpdateQuestionInSubjectMutation();
+    const [deleteQuestion, { isLoading: isDeleting }] = useDeleteQuestionMutation();
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setImage: React.Dispatch<React.SetStateAction<File | null>>) => {
         const file = e.target.files?.[0];
@@ -315,18 +405,33 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
         e.preventDefault();
 
         try {
-            await addQuestionToSubject({
-                courseId,
-                yearId,
-                subjectId,
-                questionText,
-                answerText,
-                videoLink,
-                questionImage,
-                answerImage,
-            }).unwrap();
-            refetchQuestions(); // Fetch questions after adding a new one
-            toast.success('Question added successfully!');
+            if (isEditMode && editQuestionId) {
+                await updateQuestionInSubject({
+                    courseId,
+                    yearId,
+                    subjectId,
+                    questionId: editQuestionId,
+                    questionText,
+                    answerText,
+                    videoLink,
+                    questionImage,
+                    answerImage,
+                }).unwrap();
+                toast.success('Question updated successfully!');
+            } else {
+                await addQuestionToSubject({
+                    courseId,
+                    yearId,
+                    subjectId,
+                    questionText,
+                    answerText,
+                    videoLink,
+                    questionImage,
+                    answerImage,
+                }).unwrap();
+                toast.success('Question added successfully!');
+            }
+            refetchQuestions(); // Fetch questions after adding/updating
             setIsFormVisible(false); // Close the modal after submitting
             // Clear input fields after successful submission
             setQuestionText('');
@@ -334,8 +439,11 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
             setVideoLink('');
             setQuestionImage(null);
             setAnswerImage(null);
+            setIsEditMode(false);
+            setEditQuestionId(null);
         } catch (error) {
-            console.error('Error adding question:', error);
+            console.error('Error adding/updating question:', error);
+            toast.error('Error adding/updating question');
         }
     };
 
@@ -344,19 +452,76 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
     };
 
     const handleEditQuestion = (questionId: string) => {
-        // Add your edit question logic here
+        const question = questionsData?.questions.find(q => q._id === questionId);
+        if (question) {
+            setQuestionText(question.questionText);
+            setAnswerText(question.answerText);
+
+            // Check if questionImage and answerImage are available and create File objects if needed
+            if (question.questionImage?.url) {
+                fetch(question.questionImage.url)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], "questionImage", { type: blob.type });
+                        setQuestionImage(file);
+                    });
+            } else {
+                setQuestionImage(null);
+            }
+
+            if (question.answerImage?.url) {
+                fetch(question.answerImage.url)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const file = new File([blob], "answerImage", { type: blob.type });
+                        setAnswerImage(file);
+                    });
+            } else {
+                setAnswerImage(null);
+            }
+
+            setVideoLink(question.videoLink);
+            setQuestionType(question.questionImage ? 'image' : 'text');
+            setAnswerType(question.answerImage ? 'image' : 'text');
+            setEditQuestionId(questionId);
+            setIsEditMode(true);
+            setIsFormVisible(true);
+        }
     };
 
-    const handleDeleteQuestion = (questionId: string) => {
-        // Add your delete question logic here
+
+    const handleDeleteQuestion = async (questionId: string) => {
+        try {
+            await deleteQuestion({
+                courseId,
+                yearId,
+                subjectId,
+                questionId,
+            }).unwrap();
+            toast.success('Question deleted successfully!');
+            refetchQuestions(); // Fetch questions after deleting
+        } catch (error) {
+            console.error('Error deleting question:', error);
+            toast.error('Error deleting question');
+        }
     };
 
     const handleInsertUp = (index: number) => {
-        // Add your insert up logic here
+        if (index > 0) {
+            const newQuestions = [...(questionsData?.questions || [])];
+            [newQuestions[index], newQuestions[index - 1]] = [newQuestions[index - 1], newQuestions[index]];
+            // Assuming there's an API or method to update the order of questions
+            refetchQuestions();
+        }
     };
 
     const handleInsertDown = (index: number) => {
-        // Add your insert down logic here
+        if (index < (questionsData?.questions.length || 0) - 1) {
+            const newQuestions = [...(questionsData?.questions || [])];
+            [newQuestions[index], newQuestions[index + 1]] = [newQuestions[index + 1], newQuestions[index]];
+            // Assuming there's an API or method to update the order of questions
+            refetchQuestions();
+        }
     };
 
     return (
@@ -377,7 +542,7 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                 overlayClassName="modal-overlay"
             >
                 <div className="p-4 max-w-lg mx-auto bg-white rounded shadow">
-                    <h1 className="text-2xl font-bold mb-4">Add a Question</h1>
+                    <h1 className="text-2xl font-bold mb-4">{isEditMode ? 'Edit' : 'Add'} a Question</h1>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Question Type</label>
@@ -411,13 +576,22 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                                     onChange={(e) => handleImageChange(e, setQuestionImage)}
                                     className="mt-1 block w-full border border-gray-300 rounded p-2"
                                 />
-                                {questionImage && (
+                                {/* {questionImage && (
+                                    <img
+                                        src={URL.createObjectURL(questionImage)}
+                                        alt="Question Preview"
+                                        className="mt-2 h-16 w-16 object-cover"
+                                    />
+                                )} */}
+                                {questionImage && typeof questionImage === 'object' && (
                                     <img
                                         src={URL.createObjectURL(questionImage)}
                                         alt="Question Preview"
                                         className="mt-2 h-16 w-16 object-cover"
                                     />
                                 )}
+
+
                             </div>
                         ) : null}
 
@@ -476,9 +650,9 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                         <button
                             type="submit"
                             className="w-full bg-gradient-to-r from-blue-400 to-blue-600 text-white py-2 px-4 rounded hover:from-blue-500 hover:to-blue-700"
-                            disabled={isAdding}
+                            disabled={isAdding || isUpdating}
                         >
-                            {isAdding ? 'Adding...' : 'Add Question'}
+                            {isAdding || isUpdating ? 'Saving...' : isEditMode ? 'Update Question' : 'Add Question'}
                         </button>
                     </form>
                 </div>
@@ -508,7 +682,7 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                                     <td className="border px-4 py-2">{question.questionText}</td>
                                     <td className="border px-4 py-2">
                                         {question.questionImage?.url && (
-                                            <img src={question.questionImage.url} alt="Question" className="h-16 w-16 object-cover" />
+                                            <img src={question.questionImage.url} alt="Question" className="h-18  w-24 object-cover" />
                                         )}
                                     </td>
                                     <td className="border px-4 py-2">{question.answerText}</td>

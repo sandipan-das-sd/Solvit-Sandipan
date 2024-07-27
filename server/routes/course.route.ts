@@ -94,12 +94,13 @@ import {
   DeleteYear,
   EditSubject,
   DeleteSubject,
-  EditQuestion,
+ 
   DeleteQuestion,
   UpdateQuestInSubject,
   GetYearsOfCourse,
   GetAllSubjects,
-  GetQuestions
+  GetQuestions,
+  QuestionReorder
  
 } from "../controllers/course.controller";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
@@ -131,14 +132,14 @@ courseRouter.post(
 courseRouter.get("/course/:courseId/years", isAutheticated, authorizeRoles("admin"), GetYearsOfCourse);
 
 
-  //add subject to year
+//add subject to year
 courseRouter.post(
   "/course/:courseId/year/:yearId/subject",
   isAutheticated,
   authorizeRoles("admin"),
   AddSubjectToYear)
 
-  //Add question to subject
+//Add question to subject
 courseRouter.post(
   "/course/:courseId/year/:yearId/subject/:subjectId/question",
   isAutheticated,
@@ -200,19 +201,17 @@ courseRouter.get(
 
 //get question
 courseRouter.get('/course/:courseId/year/:yearId/subject/:subjectId/questions', isAutheticated, authorizeRoles("admin"), GetQuestions);
-courseRouter.put(
-  "/course/:courseId/year/:yearId/subject/:subjectId/question/:questionId",
-  isAutheticated,
-  authorizeRoles("admin"),
-  EditQuestion
-);
-
+//delete question
 courseRouter.delete(
   "/course/:courseId/year/:yearId/subject/:subjectId/question/:questionId",
   isAutheticated,
   authorizeRoles("admin"),
   DeleteQuestion
 );
+//reorder question
+
+// Reorder questions route
+courseRouter.patch('/:courseId/years/:yearId/subjects/:subjectId/questions/reorder', QuestionReorder);
 //
 courseRouter.put(
   "/edit-course/:id",

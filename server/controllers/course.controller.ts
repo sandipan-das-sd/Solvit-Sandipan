@@ -1604,59 +1604,7 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
   }
 });
 
-//get the question
-// export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { courseId, yearId, subjectId } = req.params;
 
-//     // Fetch the course
-//     const course = await CourseModel.findById(courseId)
-//       .populate({
-//         path: 'years',
-//         match: { _id: yearId },
-//         populate: {
-//           path: 'subjects',
-//           match: { _id: subjectId },
-//           populate: {
-//             path: 'questions'
-//           }
-//         }
-//       });
-
-//     if (!course) {
-//       return res.status(404).json({ success: false, message: "Course not found" });
-//     }
-
-//     const year = course.years.find(y => y._id.toString() === yearId);
-//     if (!year) {
-//       return res.status(404).json({ success: false, message: "Year not found" });
-//     }
-
-//     const subject = year.subjects.find(s => s._id.toString() === subjectId);
-//     if (!subject) {
-//       return res.status(404).json({ success: false, message: "Subject not found" });
-//     }
-
-//     const questions = subject.questions.map(question => ({
-//       _id: question._id,
-//       questionText: question.questionText,
-//       questionImage: question.questionImage,
-//       answerText: question.answerText,
-//       answerImage: question.answerImage,
-//       videoLink: question.videoLink,
-//       videoId: question.videoId,
-//     }));
-
-//     res.status(200).json({
-//       success: true,
-//       questions
-//     });
-
-//   } catch (error: any) {
-//     console.error(error);
-//     return next(new ErrorHandler(error.message, 500));
-//   }
-// });
 
 
 export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
@@ -1710,172 +1658,77 @@ export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, 
     return next(new ErrorHandler(error.message, 500));
   }
 });
-// //Update question to the subject
-
-// export const UpdateQuestInSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const { courseId, yearId, subjectId, questionId } = req.params;
-//     const { text, answers } = req.body;
-
-//     if (!text || !Array.isArray(answers) || answers.length === 0) {
-//       return res.status(400).json({ success: false, message: "Question text and at least one answer are required" });
-//     }
-
-//     // Upload new question image to Cloudinary if the question contains an image
-//     let processedText = text;
-//     if (typeof text === 'object' && text.type === 'image' && text.content) {
-//       const result = await cloudinary.v2.uploader.upload(text.content, {
-//         folder: 'questions',
-//       });
-//       processedText = { ...text, content: result.secure_url };
-//     }
-
-//     // Upload new images to Cloudinary if answers contain images
-//     const uploadedAnswers = await Promise.all(
-//       answers.map(async (answer: any) => {
-//         if (answer.type === 'image' && answer.content) {
-//           const result = await cloudinary.v2.uploader.upload(answer.content, {
-//             folder: 'answers',
-//           });
-//           return {
-//             ...answer,
-//             content: result.secure_url,
-//           };
-//         }
-//         return answer;
-//       })
-//     );
-
-//     // Fetch the course
-//     const course = await CourseModel.findById(courseId)
-//       .populate({
-//         path: 'years.subjects',
-//         populate: {
-//           path: 'questions'
-//         }
-//       });
-
-//     if (!course) {
-//       return res.status(404).json({ success: false, message: "Course not found" });
-//     }
-
-//     // Check for the year
-//     const year = course.years.id(yearId);
-//     if (!year) {
-//       return res.status(404).json({ success: false, message: "Year not found" });
-//     }
-
-//     // Check for the subject
-//     const subject = year.subjects.id(subjectId);
-//     if (!subject) {
-//       return res.status(404).json({ success: false, message: `Subject not found with ID: ${subjectId}` });
-//     }
-
-//     // Check for the question
-//     const question = subject.questions.id(questionId);
-//     if (!question) {
-//       return res.status(404).json({ success: false, message: `Question not found with ID: ${questionId}` });
-//     }
-
-//     // Update the question and answers
-//     question.set({ type: processedText.type, content: processedText.content, answers: uploadedAnswers });
-//     await course.save();
-
-//     res.status(200).json({
-//       success: true,
-//       course,
-//       updatedQuestion: question
-//     });
-
-//   } catch (error: any) {
-//     console.error(error); // Improved error logging
-//     return next(new ErrorHandler(error.message, 500));
-//   }
-// });
-
 
 export const UpdateQuestInSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId, questionId } = req.params;
-    const { text, answers, videoExplanation } = req.body;
+    const { questionText, answerText, videoLink } = req.body;
+    const questionImage = req.files?.questionImage;
+    const answerImage = req.files?.answerImage;
 
-    if (!text || !Array.isArray(answers) || answers.length === 0) {
-      return res.status(400).json({ success: false, message: "Question text and at least one answer are required" });
-    }
-
-    // Upload new question image to Cloudinary if the question contains an image
-    let processedText = text;
-    if (text.image) {
-      const result = await cloudinary.v2.uploader.upload(text.image, {
+    let questionImageUrl = null;
+    let questionImagePublicId = null;
+    if (questionImage) {
+      const result = await cloudinary.v2.uploader.upload((questionImage as any).tempFilePath, {
         folder: 'questions',
       });
-      processedText = { ...text, image: result.secure_url };
+      questionImageUrl = result.secure_url;
+      questionImagePublicId = result.public_id;
     }
 
-    // Upload new images to Cloudinary if answers contain images
-    const uploadedAnswers = await Promise.all(
-      answers.map(async (answer: any) => {
-        if (answer.image) {
-          const result = await cloudinary.v2.uploader.upload(answer.image, {
-            folder: 'answers',
-          });
-          return {
-            ...answer,
-            image: result.secure_url,
-          };
-        }
-        return answer;
-      })
-    );
+    let answerImageUrl = null;
+    let answerImagePublicId = null;
+    if (answerImage) {
+      const result = await cloudinary.v2.uploader.upload((answerImage as any).tempFilePath, {
+        folder: 'answers',
+      });
+      answerImageUrl = result.secure_url;
+      answerImagePublicId = result.public_id;
+    }
 
-    // Fetch the course
     const course = await CourseModel.findById(courseId)
       .populate({
-        path: 'years.subjects',
-        populate: {
-          path: 'questions'
-        }
+        path: 'years.subjects.questions',
       });
 
     if (!course) {
       return res.status(404).json({ success: false, message: "Course not found" });
     }
 
-    // Check for the year
     const year = course.years.id(yearId);
     if (!year) {
       return res.status(404).json({ success: false, message: "Year not found" });
     }
 
-    // Check for the subject
     const subject = year.subjects.id(subjectId);
     if (!subject) {
-      return res.status(404).json({ success: false, message: `Subject not found with ID: ${subjectId}` });
+      return res.status(404).json({ success: false, message: "Subject not found" });
     }
 
-    // Check for the question
     const question = subject.questions.id(questionId);
     if (!question) {
-      return res.status(404).json({ success: false, message: `Question not found with ID: ${questionId}` });
+      return res.status(404).json({ success: false, message: "Question not found" });
     }
 
-    // Update the question and answers
-    question.set({
-      text: processedText.text,
-      image: processedText.image,
-      videoExplanation,
-      answers: uploadedAnswers
-    });
+    question.questionText = questionText || question.questionText;
+    question.answerText = answerText || question.answerText;
+    question.videoLink = videoLink || question.videoLink;
+
+    if (questionImageUrl) {
+      question.questionImage.url = questionImageUrl;
+      question.questionImage.public_id = questionImagePublicId;
+    }
+
+    if (answerImageUrl) {
+      question.answerImage.url = answerImageUrl;
+      question.answerImage.public_id = answerImagePublicId;
+    }
+
     await course.save();
 
-    res.status(200).json({
-      success: true,
-      course,
-      updatedQuestion: question
-    });
-
+    res.status(200).json({ success: true, question });
   } catch (error: any) {
-    console.error(error); // Improved error logging
+    console.error(error);
     return next(new ErrorHandler(error.message, 500));
   }
 });
@@ -1933,82 +1786,84 @@ export const DeleteQuestFromSubject = CatchAsyncError(async (req: Request, res: 
 });
 
 
-// Edit Question
-export const EditQuestion = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { courseId, yearId, subjectId, questionId } = req.params;
-    const { text, answers } = req.body;
-
-    if (!text || !Array.isArray(answers) || answers.length === 0) {
-      return res.status(400).json({ success: false, message: 'Question text and at least one answer are required' });
-    }
-
-    const course = await CourseModel.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
-
-    const year = course.years.id(yearId);
-    if (!year) {
-      return res.status(404).json({ success: false, message: 'Year not found' });
-    }
-
-    const subject = year.subjects.id(subjectId);
-    if (!subject) {
-      return res.status(404).json({ success: false, message: 'Subject not found' });
-    }
-
-    const questionToEdit = subject.questions.id(questionId);
-    if (!questionToEdit) {
-      return res.status(404).json({ success: false, message: 'Question not found' });
-    }
-
-    questionToEdit.text = text;
-    questionToEdit.answers = answers;
-    await course.save();
-
-    res.status(200).json({ success: true, course });
-  } catch (error: any) {
-    return next(new ErrorHandler(error.message, 500));
-  }
-});
 
 // Delete Question
 export const DeleteQuestion = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId, questionId } = req.params;
 
-    const course = await CourseModel.findById(courseId);
+    const course = await CourseModel.findById(courseId).populate({
+      path: 'years.subjects.questions',
+    });
+
     if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
+      return res.status(404).json({ success: false, message: "Course not found" });
     }
 
     const year = course.years.id(yearId);
     if (!year) {
-      return res.status(404).json({ success: false, message: 'Year not found' });
+      return res.status(404).json({ success: false, message: "Year not found" });
     }
 
     const subject = year.subjects.id(subjectId);
     if (!subject) {
-      return res.status(404).json({ success: false, message: 'Subject not found' });
+      return res.status(404).json({ success: false, message: "Subject not found" });
     }
 
-    const questionToDelete = subject.questions.id(questionId);
-    if (!questionToDelete) {
-      return res.status(404).json({ success: false, message: 'Question not found' });
+    const question = subject.questions.id(questionId);
+    if (!question) {
+      return res.status(404).json({ success: false, message: "Question not found" });
     }
 
-    subject.questions.pull(questionToDelete._id);
+    subject.questions.pull(questionId);
     await course.save();
 
-    res.status(200).json({ success: true, course });
+    res.status(200).json({ success: true, message: "Question deleted successfully" });
   } catch (error: any) {
+    console.error(error);
     return next(new ErrorHandler(error.message, 500));
   }
 });
 
 
+// Question Reorder
 
+export const QuestionReorder = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+  const { courseId, yearId, subjectId } = req.params;
+  const { orderedQuestions } = req.body; // Array of question IDs in the new order
+
+  try {
+    // Find the course by ID
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    // Find the year by ID
+    const year = course.years.id(yearId);
+    if (!year) {
+      return res.status(404).json({ message: 'Year not found' });
+    }
+
+    // Find the subject by ID
+    const subject = year.subjects.id(subjectId);
+    if (!subject) {
+      return res.status(404).json({ message: 'Subject not found' });
+    }
+
+    // Reorder questions based on the new order
+    const questionMap = new Map(subject.questions.map(question => [question._id.toString(), question]));
+    subject.questions = orderedQuestions.map(questionId => questionMap.get(questionId)).filter(Boolean);
+
+    // Save the updated course
+    await course.save();
+
+    res.status(200).json({ message: 'Questions reordered successfully' });
+  } catch (error) {
+    console.error('Error reordering questions:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {

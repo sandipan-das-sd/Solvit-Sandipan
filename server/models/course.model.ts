@@ -162,6 +162,7 @@ export interface IQuestion extends Document {
   },
   videoLink?: string;
   videoId?: string; // Extracted video ID
+  order: Number,
 }
 
 

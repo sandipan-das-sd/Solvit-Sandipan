@@ -365,19 +365,50 @@ export const coursesApi = apiSlice.injectEndpoints({
         credentials: 'include',
       }),
     }),
+    // updateQuestionInSubject: builder.mutation({
+    //   query: ({ courseId, yearId, subjectId, questionId, text, answers }) => ({
+    //     url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
+    //     method: 'PUT',
+    //     body: { text, answers },
+    //     credentials: 'include',
+    //   }),
+    // }),
+
     updateQuestionInSubject: builder.mutation({
-      query: ({ courseId, yearId, subjectId, questionId, text, answers }) => ({
-        url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
-        method: 'PUT',
-        body: { text, answers },
-        credentials: 'include',
-      }),
+      query: ({ courseId, yearId, subjectId, questionId, questionText, answerText, videoLink, questionImage, answerImage }) => {
+        const formData = new FormData();
+        formData.append('questionText', questionText);
+        formData.append('answerText', answerText);
+        formData.append('videoLink', videoLink);
+        if (questionImage) {
+          formData.append('questionImage', questionImage);
+        }
+        if (answerImage) {
+          formData.append('answerImage', answerImage);
+        }
+
+        return {
+          url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
+          method: 'PUT',
+          body: formData,
+          credentials: 'include',
+        };
+      },
     }),
+
+   
     deleteQuestion: builder.mutation({
       query: ({ courseId, yearId, subjectId, questionId }) => ({
         url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question/${questionId}`,
         method: 'DELETE',
         credentials: 'include',
+      }),
+    }),
+    reorderQuestions: builder.mutation({
+      query: ({ courseId, yearId, subjectId, orderedQuestions }) => ({
+        url: `/courses/${courseId}/years/${yearId}/subjects/${subjectId}/questions/reorder`,
+        method: 'PATCH',
+        body: { orderedQuestions },
       }),
     }),
   }),
@@ -407,4 +438,5 @@ export const {
   useUpdateQuestionInSubjectMutation,
   useDeleteQuestionMutation,
   useGetQuestionsToSubjectQuery,
+  useReorderQuestionsMutation
 } = coursesApi;
