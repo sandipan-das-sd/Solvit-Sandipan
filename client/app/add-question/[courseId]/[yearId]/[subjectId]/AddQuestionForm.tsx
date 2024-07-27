@@ -1,6 +1,7 @@
-"use client"
-import React, { useState } from 'react';
-import axios from 'axios';
+
+"use client";
+import React, { useState, useEffect } from 'react';
+import { useAddQuestionToSubjectMutation, useGetQuestionsToSubjectQuery } from './../../../../../redux/features/courses/coursesApi';
 
 interface AddQuestionFormProps {
     courseId: string;
@@ -15,6 +16,13 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
     const [questionImage, setQuestionImage] = useState<File | null>(null);
     const [answerImage, setAnswerImage] = useState<File | null>(null);
 
+    const [addQuestionToSubject, { isLoading: isAdding }] = useAddQuestionToSubjectMutation();
+    const { data: questionsData, refetch: refetchQuestions, isFetching: isFetchingQuestions } = useGetQuestionsToSubjectQuery({
+        courseId,
+        yearId,
+        subjectId,
+    });
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setImage: React.Dispatch<React.SetStateAction<File | null>>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -25,25 +33,18 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('questionText', questionText);
-        formData.append('answerText', answerText);
-        formData.append('videoLink', videoLink);
-
-        if (questionImage) formData.append('questionImage', questionImage);
-        if (answerImage) formData.append('answerImage', answerImage);
-
         try {
-            const response = await axios.post(
-                `http://localhost:8000/api/v1/course/${courseId}/year/${yearId}/subject/${subjectId}/question`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
-            console.log('Question added:', response.data);
+            await addQuestionToSubject({
+                courseId,
+                yearId,
+                subjectId,
+                questionText,
+                answerText,
+                videoLink,
+                questionImage,
+                answerImage,
+            }).unwrap();
+            refetchQuestions(); // Fetch questions after adding a new one
         } catch (error) {
             console.error('Error adding question:', error);
         }
@@ -106,10 +107,55 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                 <button
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                    disabled={isAdding}
                 >
-                    Add Question
+                    {isAdding ? 'Adding...' : 'Add Question'}
                 </button>
             </form>
+            {isAdding && <div>Loading...</div>}
+            <div className="mt-8">
+                <h2 className="text-xl font-bold mb-4">Questions</h2>
+                {isFetchingQuestions ? (
+                    <div>Loading questions...</div>
+                ) : (
+                    <table className="min-w-full bg-white">
+                        <thead>
+                            <tr>
+                                <th className="py-2">Question Text</th>
+                                <th className="py-2">Question Image</th>
+                                <th className="py-2">Answer Text</th>
+                                <th className="py-2">Answer Image</th>
+                                <th className="py-2">Video Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {questionsData?.questions.map((question) => (
+                                <tr key={question._id}>
+                                    <td className="border px-4 py-2">{question.questionText}</td>
+                                    <td className="border px-4 py-2">
+                                        {question.questionImage?.url && (
+                                            <img src={question.questionImage.url} alt="Question" className="h-10 w-10 object-cover" />
+                                        )}
+                                    </td>
+                                    <td className="border px-4 py-2">{question.answerText}</td>
+                                    <td className="border px-4 py-2">
+                                        {question.answerImage?.url && (
+                                            <img src={question.answerImage.url} alt="Answer" className="h-10 w-10 object-cover" />
+                                        )}
+                                    </td>
+                                    <td className="border px-4 py-2">
+                                        {question.videoLink && (
+                                            <a href={question.videoLink} target="_blank" rel="noopener noreferrer">
+                                                {question.videoLink}
+                                            </a>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
+            </div>
         </div>
     );
 };

@@ -341,12 +341,21 @@ export const coursesApi = apiSlice.injectEndpoints({
       }),
     }),
     addQuestionToSubject: builder.mutation({
-      query: ({ courseId, yearId, subjectId, text, answers, videoExplanation }) => ({
-        url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question`,
-        method: 'POST',
-        body: {  text, answers, videoExplanation },
-        credentials: 'include',
-      }),
+      query: ({ courseId, yearId, subjectId, questionText, answerText, videoLink, questionImage, answerImage }) => {
+        const formData = new FormData();
+        formData.append('questionText', questionText);
+        formData.append('answerText', answerText);
+        formData.append('videoLink', videoLink);
+        if (questionImage) formData.append('questionImage', questionImage);
+        if (answerImage) formData.append('answerImage', answerImage);
+
+        return {
+          url: `course/${courseId}/year/${yearId}/subject/${subjectId}/question`,
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+        };
+      },
     }),
 
     getQuestionsToSubject: builder.query({
@@ -355,7 +364,6 @@ export const coursesApi = apiSlice.injectEndpoints({
         method: 'GET',
         credentials: 'include',
       }),
-     
     }),
     updateQuestionInSubject: builder.mutation({
       query: ({ courseId, yearId, subjectId, questionId, text, answers }) => ({

@@ -1605,6 +1605,60 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
 });
 
 //get the question
+// export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { courseId, yearId, subjectId } = req.params;
+
+//     // Fetch the course
+//     const course = await CourseModel.findById(courseId)
+//       .populate({
+//         path: 'years',
+//         match: { _id: yearId },
+//         populate: {
+//           path: 'subjects',
+//           match: { _id: subjectId },
+//           populate: {
+//             path: 'questions'
+//           }
+//         }
+//       });
+
+//     if (!course) {
+//       return res.status(404).json({ success: false, message: "Course not found" });
+//     }
+
+//     const year = course.years.find(y => y._id.toString() === yearId);
+//     if (!year) {
+//       return res.status(404).json({ success: false, message: "Year not found" });
+//     }
+
+//     const subject = year.subjects.find(s => s._id.toString() === subjectId);
+//     if (!subject) {
+//       return res.status(404).json({ success: false, message: "Subject not found" });
+//     }
+
+//     const questions = subject.questions.map(question => ({
+//       _id: question._id,
+//       questionText: question.questionText,
+//       questionImage: question.questionImage,
+//       answerText: question.answerText,
+//       answerImage: question.answerImage,
+//       videoLink: question.videoLink,
+//       videoId: question.videoId,
+//     }));
+
+//     res.status(200).json({
+//       success: true,
+//       questions
+//     });
+
+//   } catch (error: any) {
+//     console.error(error);
+//     return next(new ErrorHandler(error.message, 500));
+//   }
+// });
+
+
 export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId } = req.params;
@@ -1618,26 +1672,26 @@ export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, 
           path: 'subjects',
           match: { _id: subjectId },
           populate: {
-            path: 'questions'
-          }
-        }
+            path: 'questions',
+          },
+        },
       });
 
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res.status(404).json({ success: false, message: 'Course not found' });
     }
 
-    const year = course.years.find(y => y._id.toString() === yearId);
+    const year = course.years.find((y) => y._id.toString() === yearId);
     if (!year) {
-      return res.status(404).json({ success: false, message: "Year not found" });
+      return res.status(404).json({ success: false, message: 'Year not found' });
     }
 
-    const subject = year.subjects.find(s => s._id.toString() === subjectId);
+    const subject = year.subjects.find((s) => s._id.toString() === subjectId);
     if (!subject) {
-      return res.status(404).json({ success: false, message: "Subject not found" });
+      return res.status(404).json({ success: false, message: 'Subject not found' });
     }
 
-    const questions = subject.questions.map(question => ({
+    const questions = subject.questions.map((question) => ({
       _id: question._id,
       questionText: question.questionText,
       questionImage: question.questionImage,
@@ -1649,9 +1703,8 @@ export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, 
 
     res.status(200).json({
       success: true,
-      questions
+      questions,
     });
-
   } catch (error: any) {
     console.error(error);
     return next(new ErrorHandler(error.message, 500));
