@@ -100,7 +100,7 @@ import {
   GetYearsOfCourse,
   GetAllSubjects,
   GetQuestions,
-  QuestionReorder
+ 
  
 } from "../controllers/course.controller";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
@@ -211,8 +211,8 @@ courseRouter.delete(
 //reorder question
 
 // Reorder questions route
-courseRouter.patch('/:courseId/years/:yearId/subjects/:subjectId/questions/reorder', QuestionReorder);
-//
+// courseRouter.patch('/:courseId/years/:yearId/subjects/:subjectId/questions/reorder', QuestionReorder);
+// //
 courseRouter.put(
   "/edit-course/:id",
   isAutheticated,

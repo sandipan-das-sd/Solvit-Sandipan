@@ -20,19 +20,11 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 exports.createOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
     try {
         const { courseId, payment_info } = req.body;
-        // if (payment_info) {
-        //   if ("id" in payment_info) {
-        //     const paymentIntentId = payment_info.id;
-        //     const paymentIntent = await stripe.paymentIntents.retrieve(
-        //       paymentIntentId
-        //     );
-        //     if (paymentIntent.status !== "succeeded") {
-        //       return next(new ErrorHandler("Payment not authorized!", 400));
-        //     }
-        //   }
-        // }
         const user = await user_model_1.default.findById(req.user?._id);
-        const courseExistInUser = user?.courses.some((course) => course._id.toString() === courseId);
+        if (!user) {
+            return next(new ErrorHandler_1.default("User not found", 404));
+        }
+        const courseExistInUser = user.courses.some((course) => course.courseId.toString() === courseId);
         if (courseExistInUser) {
             return next(new ErrorHandler_1.default("You have already purchased this course", 400));
         }
@@ -41,8 +33,8 @@ exports.createOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
             return next(new ErrorHandler_1.default("Course not found", 404));
         }
         const data = {
-            courseId: course._id,
-            userId: user?._id,
+            courseId: course._id.toString(),
+            userId: user._id.toString(),
             payment_info,
         };
         const mailData = {
@@ -71,15 +63,21 @@ exports.createOrder = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
         catch (error) {
             return next(new ErrorHandler_1.default(error.message, 500));
         }
-        user?.courses.push(course?._id);
-        await redis_1.redis.set(req.user?._id, JSON.stringify(user));
-        await user?.save();
+        user.courses.push({ courseId: course._id.toString() });
+        const userId = req.user?._id?.toString();
+        if (userId) {
+            await redis_1.redis.set(userId, JSON.stringify(user));
+        }
+        else {
+            return next(new ErrorHandler_1.default("User ID is missing", 400));
+        }
+        await user.save();
         await notification_Model_1.default.create({
-            user: user?._id,
+            user: user._id,
             title: "New Order",
-            message: `You have a new order from ${course?.name}`,
+            message: `You have a new order from ${course.name}`,
         });
-        course.purchased = course.purchased + 1;
+        course.purchased += 1;
         await course.save();
         (0, order_service_1.newOrder)(data, res, next);
     }
@@ -108,9 +106,9 @@ exports.newPayment = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, ne
         const myPayment = await stripe.paymentIntents.create({
             amount: req.body.amount,
             currency: "USD",
-            description: "E-learning course services",
+            description: "SolviT course services",
             metadata: {
-                company: "E-Learning",
+                company: "SolviT",
             },
             automatic_payment_methods: {
                 enabled: true,

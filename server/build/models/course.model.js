@@ -156,7 +156,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // export default CourseModel;
 const mongoose_1 = __importStar(require("mongoose"));
 // Schemas
+// const questionSchema = new Schema<IQuestion>({
+//   _id: mongoose.Types.ObjectId,
+//   questionText: String,
+//   questionImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   answerText: String,
+//   answerImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   videoLink:String,
+//   videoId:String,
+// });
 const questionSchema = new mongoose_1.Schema({
+    _id: mongoose_1.default.Types.ObjectId,
     questionText: String,
     questionImage: {
         url: String,
@@ -169,6 +185,7 @@ const questionSchema = new mongoose_1.Schema({
     },
     videoLink: String,
     videoId: String,
+    order: Number,
 });
 const subjectSchema = new mongoose_1.Schema({
     name: {

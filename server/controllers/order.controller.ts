@@ -19,40 +19,27 @@ export const createOrder = CatchAsyncError(
     try {
       const { courseId, payment_info } = req.body as IOrder;
 
-      // if (payment_info) {
-      //   if ("id" in payment_info) {
-      //     const paymentIntentId = payment_info.id;
-      //     const paymentIntent = await stripe.paymentIntents.retrieve(
-      //       paymentIntentId
-      //     );
-
-      //     if (paymentIntent.status !== "succeeded") {
-      //       return next(new ErrorHandler("Payment not authorized!", 400));
-      //     }
-      //   }
-      // }
-
       const user = await userModel.findById(req.user?._id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
 
-      const courseExistInUser = user?.courses.some(
-        (course: any) => course._id.toString() === courseId
+      const courseExistInUser = user.courses.some(
+        (course: any) => course.courseId.toString() === courseId
       );
 
       if (courseExistInUser) {
-        return next(
-          new ErrorHandler("You have already purchased this course", 400)
-        );
+        return next(new ErrorHandler("You have already purchased this course", 400));
       }
 
       const course: ICourse | null = await CourseModel.findById(courseId);
-
       if (!course) {
         return next(new ErrorHandler("Course not found", 404));
       }
 
       const data: any = {
-        courseId: course._id,
-        userId: user?._id,
+        courseId: course._id.toString(),
+        userId: user._id.toString(),
         payment_info,
       };
 
@@ -87,20 +74,24 @@ export const createOrder = CatchAsyncError(
         return next(new ErrorHandler(error.message, 500));
       }
 
-      user?.courses.push(course?._id);
+      user.courses.push({ courseId: course._id.toString() });
 
-      await redis.set(req.user?._id, JSON.stringify(user));
+      const userId = req.user?._id?.toString();
+      if (userId) {
+        await redis.set(userId, JSON.stringify(user));
+      } else {
+        return next(new ErrorHandler("User ID is missing", 400));
+      }
 
-      await user?.save();
+      await user.save();
 
       await NotificationModel.create({
-        user: user?._id,
+        user: user._id,
         title: "New Order",
-        message: `You have a new order from ${course?.name}`,
+        message: `You have a new order from ${course.name}`,
       });
 
-      course.purchased = course.purchased + 1;
-
+      course.purchased += 1;
       await course.save();
 
       newOrder(data, res, next);
@@ -137,9 +128,9 @@ export const newPayment = CatchAsyncError(
       const myPayment = await stripe.paymentIntents.create({
         amount: req.body.amount,
         currency: "USD",
-        description: "E-learning course services",
+        description: "SolviT course services",
         metadata: {
-          company: "E-Learning",
+          company: "SolviT",
         },
         automatic_payment_methods: {
           enabled: true,

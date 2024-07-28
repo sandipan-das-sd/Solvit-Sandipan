@@ -91,8 +91,8 @@ courseRouter.get('/course/:courseId/year/:yearId/subject/:subjectId/questions', 
 courseRouter.delete("/course/:courseId/year/:yearId/subject/:subjectId/question/:questionId", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.DeleteQuestion);
 //reorder question
 // Reorder questions route
-courseRouter.patch('/:courseId/years/:yearId/subjects/:subjectId/questions/reorder', course_controller_1.QuestionReorder);
-//
+// courseRouter.patch('/:courseId/years/:yearId/subjects/:subjectId/questions/reorder', QuestionReorder);
+// //
 courseRouter.put("/edit-course/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.editCourse);
 courseRouter.get("/get-course/:id", course_controller_1.getSingleCourse);
 courseRouter.get("/get-courses", course_controller_1.getAllCourses);

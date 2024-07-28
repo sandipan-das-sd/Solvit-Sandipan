@@ -149,30 +149,48 @@ import { IUser } from "./user.model";
 
 // Interfaces
 
+// export interface IQuestion extends Document {
+//   _id: mongoose.Types.ObjectId;
+//   questionText: String,
+//   questionImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   answerText: String,
+//   answerImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   videoLink?: string;
+//   videoId?: string; // Extracted video ID
+//   order: Number,
+// }
+
 export interface IQuestion extends Document {
-  _id: string; 
-  questionText: String,
+  _id: mongoose.Types.ObjectId;
+  questionText: string; // Changed to lowercase
   questionImage: {
-    url: String,
-    public_id: String,
-  },
-  answerText: String,
+    url: string; // Changed to lowercase
+    public_id: string; // Changed to lowercase
+  };
+  answerText: string; // Changed to lowercase
   answerImage: {
-    url: String,
-    public_id: String,
-  },
+    url: string; // Changed to lowercase
+    public_id: string; // Changed to lowercase
+  };
   videoLink?: string;
-  videoId?: string; // Extracted video ID
-  order: Number,
+  videoId?: string;
+  order: number; // Changed to lowercase
 }
 
-
 export interface ISubject extends Document {
+_id:string,
   name: string;
   questions: IQuestion[];
 }
 
 export interface IYear extends Document {
+  _id: mongoose.Types.ObjectId;
   year: number;
   subjects: ISubject[];
 }
@@ -209,6 +227,7 @@ interface ICourseData extends Document {
 }
 
 export interface ICourse extends Document {
+  _id: string;
   name: string;
   description: string;
   categories: string;
@@ -229,7 +248,24 @@ export interface ICourse extends Document {
 
 // Schemas
 
+// const questionSchema = new Schema<IQuestion>({
+//   _id: mongoose.Types.ObjectId,
+//   questionText: String,
+//   questionImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   answerText: String,
+//   answerImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   videoLink:String,
+//   videoId:String,
+// });
+
 const questionSchema = new Schema<IQuestion>({
+  _id: mongoose.Types.ObjectId,
   questionText: String,
   questionImage: {
     url: String,
@@ -240,9 +276,11 @@ const questionSchema = new Schema<IQuestion>({
     url: String,
     public_id: String,
   },
-  videoLink:String,
-  videoId:String,
+  videoLink: String,
+  videoId: String,
+  order: Number,
 });
+
 const subjectSchema = new Schema<ISubject>({
   name: {
     type: String,
