@@ -85,7 +85,7 @@ export const uploadCourse = CatchAsyncError(
 
 
 
-// Adding a Year to a Course
+// Adding a Year to a Course Main
 
 // export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
@@ -116,6 +116,8 @@ export const uploadCourse = CatchAsyncError(
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // })
+
+
 
 //adding year to a course
 export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
@@ -169,7 +171,9 @@ export const GetYearsOfCourse = async (req: Request, res: Response, next: NextFu
     return next(new ErrorHandler(error.message, 500));
   }
 };
-// Edit Year
+
+
+// Edit Year main
 // export const EditYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { courseId, yearId } = req.params;
@@ -197,6 +201,9 @@ export const GetYearsOfCourse = async (req: Request, res: Response, next: NextFu
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // });
+
+
+
 export const EditYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId } = req.params;
@@ -227,7 +234,9 @@ export const EditYear = CatchAsyncError(async (req: Request, res: Response, next
     return next(new ErrorHandler(error.message, 500));
   }
 });
-// Delete Year
+
+
+// Delete Year main
 // export const DeleteYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { courseId, yearId } = req.params;
@@ -250,6 +259,9 @@ export const EditYear = CatchAsyncError(async (req: Request, res: Response, next
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // });
+
+
+
 
 export const DeleteYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -277,7 +289,7 @@ export const DeleteYear = CatchAsyncError(async (req: Request, res: Response, ne
   }
 });
 
-// Adding a Subject to a Year
+// Adding a Subject to a Year main
 
 
 // export const AddSubjectToYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
@@ -308,6 +320,9 @@ export const DeleteYear = CatchAsyncError(async (req: Request, res: Response, ne
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // })
+
+
+
 
 export const AddSubjectToYear = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -348,7 +363,10 @@ export const AddSubjectToYear = CatchAsyncError(async (req: Request, res: Respon
     return next(new ErrorHandler(error.message, 500));
   }
 });
-// Edit Subject
+
+
+
+// Edit Subject main
 // export const EditSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { courseId, yearId, subjectId } = req.params;
@@ -381,6 +399,10 @@ export const AddSubjectToYear = CatchAsyncError(async (req: Request, res: Respon
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // });
+
+
+
+
 
 export const EditSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -416,7 +438,11 @@ export const EditSubject = CatchAsyncError(async (req: Request, res: Response, n
   }
 });
 
-// Delete Subject
+
+
+
+
+// Delete Subject main
 // export const DeleteSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { courseId, yearId, subjectId } = req.params;
@@ -444,7 +470,10 @@ export const EditSubject = CatchAsyncError(async (req: Request, res: Response, n
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // });
-// Delete Subject
+
+
+
+// Delete Subject 
 export const DeleteSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId } = req.params;
@@ -514,6 +543,9 @@ export const GetAllSubjects = CatchAsyncError(async (req: Request, res: Response
 
 });
 
+
+
+  //add question main
 // export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
 //   try {
 //     const { courseId, yearId, subjectId } = req.params;
@@ -595,6 +627,9 @@ export const GetAllSubjects = CatchAsyncError(async (req: Request, res: Response
 //     return next(new ErrorHandler(error.message, 500));
 //   }
 // });
+
+
+
 
 export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -991,6 +1026,8 @@ export const DeleteQuestion = CatchAsyncError(async (req: Request, res: Response
 //     res.status(500).json({ message: 'Internal Server Error' });
 //   }
 // });
+
+
 export const editCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
