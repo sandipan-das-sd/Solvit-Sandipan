@@ -493,8 +493,45 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
     //     }
     // };
 
+    // const handleEditQuestion = (questionId: string) => {
+    //     const question = questionsData?.questions.find((q: IQuestion) => q._id === questionId);
+    //     if (question) {
+    //         setQuestionText(question.questionText);
+    //         setAnswerText(question.answerText);
+
+    //         // Check if questionImage and answerImage are available and create File objects if needed
+    //         if (question.questionImage?.url) {
+    //             fetch(question.questionImage.url)
+    //                 .then(res => res.blob())
+    //                 .then(blob => {
+    //                     const file = new File([blob], "questionImage", { type: blob.type });
+    //                     setQuestionImage(file);
+    //                 });
+    //         } else {
+    //             setQuestionImage(null);
+    //         }
+
+    //         if (question.answerImage?.url) {
+    //             fetch(question.answerImage.url)
+    //                 .then(res => res.blob())
+    //                 .then(blob => {
+    //                     const file = new File([blob], "answerImage", { type: blob.type });
+    //                     setAnswerImage(file);
+    //                 });
+    //         } else {
+    //             setAnswerImage(null);
+    //         }
+
+    //         setVideoLink(question.videoLink);
+    //         setQuestionType(question.questionImage ? 'image' : 'text');
+    //         setAnswerType(question.answerImage ? 'image' : 'text');
+    //         setEditQuestionId(questionId);
+    //         setIsEditMode(true);
+    //         setIsFormVisible(true);
+    //     }
+    // };
     const handleEditQuestion = (questionId: string) => {
-        const question = questionsData?.questions.find((q: IQuestion) => q._id === questionId);
+        const question = questionsData?.questions.find((q: IQuestion) => q._id.toString() === questionId);
         if (question) {
             setQuestionText(question.questionText);
             setAnswerText(question.answerText);
@@ -730,7 +767,7 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                         </thead>
                         <tbody>
                             {questionsData?.questions.map((question:IQuestion, index:number) => (
-                                <tr key={question._id as string} className="even:bg-gray-50">
+                                <tr key={question._id.toString()} className="even:bg-gray-50">
                                     <td className="border px-4 py-2">{index + 1}</td>
                                     <td className="border px-4 py-2">{question.questionText}</td>
                                     <td className="border px-4 py-2">
@@ -761,13 +798,13 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                                     </td>
                                     <td className="border px-4 py-2 space-x-2">
                                         <button
-                                            onClick={() => handleEditQuestion(question._id)}
+                                            onClick={() => handleEditQuestion(question._id.toString())}
                                             className="text-blue-500 hover:underline"
                                         >
                                             Edit
                                         </button>
                                         <button
-                                            onClick={() => handleDeleteQuestion(question._id)}
+                                            onClick={() => handleDeleteQuestion(question._id.toString())}
                                             className="text-red-500 hover:underline"
                                         >
                                             Delete
