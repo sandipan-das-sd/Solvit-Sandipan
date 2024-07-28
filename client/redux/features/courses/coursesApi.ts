@@ -1,7 +1,7 @@
 
 
 import { apiSlice } from "../api/apiSlice";
-import { IQuestion } from '../../../../server/models/course.model';
+
 export const coursesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createCourse: builder.mutation({
