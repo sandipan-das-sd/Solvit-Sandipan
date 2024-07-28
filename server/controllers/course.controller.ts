@@ -472,8 +472,6 @@ export const EditSubject = CatchAsyncError(async (req: Request, res: Response, n
 // });
 
 
-
-// Delete Subject 
 export const DeleteSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId } = req.params;
@@ -483,23 +481,24 @@ export const DeleteSubject = CatchAsyncError(async (req: Request, res: Response,
       return res.status(404).json({ success: false, message: 'Course not found' });
     }
 
-    // Cast `course.years` to an array of `IYear` subdocuments
-    const year = (course.years as IYear[]).find(y => y._id.toString() === yearId);
+    // Find the year document in the array manually
+    const year = course.years.find((y: IYear) => y._id.toString() === yearId);
     if (!year) {
       return res.status(404).json({ success: false, message: 'Year not found' });
     }
 
-    const subjectToDelete = year.subjects.id(subjectId);
-    if (!subjectToDelete) {
+    const subjectIndex = year.subjects.findIndex(s => s._id.toString() === subjectId);
+    if (subjectIndex === -1) {
       return res.status(404).json({ success: false, message: 'Subject not found' });
     }
 
-    // Remove subject
-    year.subjects.pull(subjectToDelete._id);
+    // Remove the subject from the array
+    year.subjects.splice(subjectIndex, 1);
     await course.save();
 
     res.status(200).json({ success: true, course });
   } catch (error: any) {
+    console.error(error);
     return next(new ErrorHandler(error.message, 500));
   }
 });
