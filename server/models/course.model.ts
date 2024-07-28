@@ -144,8 +144,6 @@
 // export default CourseModel;
 
 
-import mongoose, { Document, Model, Schema } from "mongoose";
-import { IUser } from "./user.model";
 
 // Interfaces
 
@@ -166,6 +164,8 @@ import { IUser } from "./user.model";
 //   order: Number,
 // }
 
+import mongoose, { Document, Model, Schema } from "mongoose";
+import { IUser } from "./user.model";
 export interface IQuestion extends Document {
   _id: mongoose.Types.ObjectId;
   questionText: string; // Changed to lowercase
@@ -246,23 +246,6 @@ export interface ICourse extends Document {
   years: IYear[];
 }
 
-// Schemas
-
-// const questionSchema = new Schema<IQuestion>({
-//   _id: mongoose.Types.ObjectId,
-//   questionText: String,
-//   questionImage: {
-//     url: String,
-//     public_id: String,
-//   },
-//   answerText: String,
-//   answerImage: {
-//     url: String,
-//     public_id: String,
-//   },
-//   videoLink:String,
-//   videoId:String,
-// });
 
 const questionSchema = new Schema<IQuestion>({
   _id: mongoose.Types.ObjectId,
