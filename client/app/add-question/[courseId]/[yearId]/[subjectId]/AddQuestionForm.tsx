@@ -360,7 +360,7 @@ import Modal from 'react-modal';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
-
+import { IQuestion } from '../../../../../../server/models/course.model';
 import './AddQuestion.css';
 import {
     useAddQuestionToSubjectMutation,
@@ -374,6 +374,7 @@ interface AddQuestionFormProps {
     yearId: string;
     subjectId: string;
 }
+
 
 const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, subjectId }) => {
     const [questionText, setQuestionText] = useState('');
@@ -453,8 +454,46 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
         setIsFormVisible(!isFormVisible);
     };
 
+    // const handleEditQuestion = (questionId: string) => {
+    //     const question = questionsData?.questions.find(q => q._id === questionId);
+    //     if (question) {
+    //         setQuestionText(question.questionText);
+    //         setAnswerText(question.answerText);
+
+    //         // Check if questionImage and answerImage are available and create File objects if needed
+    //         if (question.questionImage?.url) {
+    //             fetch(question.questionImage.url)
+    //                 .then(res => res.blob())
+    //                 .then(blob => {
+    //                     const file = new File([blob], "questionImage", { type: blob.type });
+    //                     setQuestionImage(file);
+    //                 });
+    //         } else {
+    //             setQuestionImage(null);
+    //         }
+
+    //         if (question.answerImage?.url) {
+    //             fetch(question.answerImage.url)
+    //                 .then(res => res.blob())
+    //                 .then(blob => {
+    //                     const file = new File([blob], "answerImage", { type: blob.type });
+    //                     setAnswerImage(file);
+    //                 });
+    //         } else {
+    //             setAnswerImage(null);
+    //         }
+
+    //         setVideoLink(question.videoLink);
+    //         setQuestionType(question.questionImage ? 'image' : 'text');
+    //         setAnswerType(question.answerImage ? 'image' : 'text');
+    //         setEditQuestionId(questionId);
+    //         setIsEditMode(true);
+    //         setIsFormVisible(true);
+    //     }
+    // };
+
     const handleEditQuestion = (questionId: string) => {
-        const question = questionsData?.questions.find(q => q._id === questionId);
+        const question = questionsData?.questions.find((q: IQuestion) => q._id === questionId);
         if (question) {
             setQuestionText(question.questionText);
             setAnswerText(question.answerText);
@@ -490,6 +529,7 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
             setIsFormVisible(true);
         }
     };
+
 
 
     const handleDeleteQuestion = async (questionId: string) => {
@@ -688,19 +728,27 @@ const AddQuestionForm: React.FC<AddQuestionFormProps> = ({ courseId, yearId, sub
                             </tr>
                         </thead>
                         <tbody>
-                            {questionsData?.questions.map((question, index) => (
-                                <tr key={question._id} className="even:bg-gray-50">
+                            {questionsData?.questions.map((question:IQuestion, index:number) => (
+                                <tr key={question._id as string} className="even:bg-gray-50">
                                     <td className="border px-4 py-2">{index + 1}</td>
                                     <td className="border px-4 py-2">{question.questionText}</td>
                                     <td className="border px-4 py-2">
                                         {question.questionImage?.url && (
-                                            <img src={question.questionImage.url} alt="Question" className="h-18  w-24 object-cover" />
+                                            <Image src={question.questionImage.url as string} alt="Question"
+                                                width={64} // equivalent to h-16
+                                                height={64} // equivalent to w-16
+                                                className=" 
+
+                                            object-cover" />
                                         )}
                                     </td>
                                     <td className="border px-4 py-2">{question.answerText}</td>
                                     <td className="border px-4 py-2">
                                         {question.answerImage?.url && (
-                                            <img src={question.answerImage.url} alt="Answer" className="h-16 w-16 object-cover" />
+                                            <Image src={question.answerImage.url as string} alt="Answer"
+                                                width={64} // equivalent to h-16
+                                                height={64} // equivalent to w-16
+                                                className=" object-cover" />
                                         )}
                                     </td>
                                     <td className="border px-4 py-2">

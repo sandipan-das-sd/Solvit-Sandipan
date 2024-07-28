@@ -150,6 +150,7 @@ import { IUser } from "./user.model";
 // Interfaces
 
 export interface IQuestion extends Document {
+  _id: string; 
   questionText: String,
   questionImage: {
     url: String,

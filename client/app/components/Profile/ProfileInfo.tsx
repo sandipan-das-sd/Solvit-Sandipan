@@ -36,18 +36,31 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
 
     };
 
+    // useEffect(() => {
+    //     if (isSuccess) {
+    //         setLoadUser(true);
+    //     }
+    //     if (error || updateError) {
+    //         console.log(error);
+    //     }
+    //     if (success) {
+    //         toast.success("Profile updated successfully!");
+    //         setLoadUser(true);
+    //     }
+    // }, [isSuccess, error]);
     useEffect(() => {
         if (isSuccess) {
             setLoadUser(true);
         }
         if (error || updateError) {
-            console.log(error);
+            console.log(error || updateError);
         }
         if (success) {
             toast.success("Profile updated successfully!");
             setLoadUser(true);
         }
-    }, [isSuccess, error]);
+    }, [isSuccess, error, success, updateError]);
+
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();

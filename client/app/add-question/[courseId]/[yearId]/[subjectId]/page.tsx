@@ -1346,14 +1346,40 @@
 // };
 
 // export default AddQuestion;
-"use client"
+// "use client"
+// import React from 'react';
+// import { useParams } from 'next/navigation';
+// import AddQuestionForm from './AddQuestionForm';
+
+// const AddQuestion = () => {
+//   const params = useParams();
+//   const { courseId, yearId, subjectId } = params;
+
+//   return (
+//     <div>
+//       <AddQuestionForm courseId={courseId} yearId={yearId} subjectId={subjectId} />
+//     </div>
+//   );
+// };
+
+// export default AddQuestion;
+"use client";
 import React from 'react';
 import { useParams } from 'next/navigation';
 import AddQuestionForm from './AddQuestionForm';
 
 const AddQuestion = () => {
   const params = useParams();
-  const { courseId, yearId, subjectId } = params;
+
+  // Optional chaining to handle the case where params might be null or missing
+  const courseId = params?.courseId as string | undefined;
+  const yearId = params?.yearId as string | undefined;
+  const subjectId = params?.subjectId as string | undefined;
+
+  // Check if all required parameters are present
+  if (!courseId || !yearId || !subjectId) {
+    return <div>Missing parameters</div>;
+  }
 
   return (
     <div>

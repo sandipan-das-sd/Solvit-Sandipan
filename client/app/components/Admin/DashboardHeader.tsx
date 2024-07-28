@@ -34,6 +34,17 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
     audio.play();
   };
 
+  // useEffect(() => {
+  //   if (data) {
+  //     setNotifications(
+  //       data.notifications.filter((item: any) => item.status === "unread")
+  //     );
+  //   }
+  //   if (isSuccess) {
+  //     refetch();
+  //   }
+  //   audio.load();
+  // }, [data, isSuccess, audio]);
   useEffect(() => {
     if (data) {
       setNotifications(
@@ -44,7 +55,7 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
       refetch();
     }
     audio.load();
-  }, [data, isSuccess, audio]);
+  }, [data, isSuccess, audio,refetch]);
 
   useEffect(() => {
     // socketId.on("newNotification", (data) => {

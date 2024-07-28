@@ -33,6 +33,31 @@ const AllCourses: FC<Props> = ({ isTeam }) => {
   const [deleteUser, { isSuccess: deleteSuccess, error: deleteError }] =
     useDeleteUserMutation({});
 
+  // useEffect(() => {
+  //   if (updateError) {
+  //     if ("data" in updateError) {
+  //       const errorMessage = updateError as any;
+  //       toast.error(errorMessage.data.message);
+  //     }
+  //   }
+
+  //   if (isSuccess) {
+  //     refetch();
+  //     toast.success("User role updated successfully");
+  //     setActive(false);
+  //   }
+  //   if (deleteSuccess) {
+  //     refetch();
+  //     toast.success("Delete user successfully!");
+  //     setOpen(false);
+  //   }
+  //   if (deleteError) {
+  //     if ("data" in deleteError) {
+  //       const errorMessage = deleteError as any;
+  //       toast.error(errorMessage.data.message);
+  //     }
+  //   }
+  // }, [updateError, isSuccess, deleteSuccess, deleteError]);
   useEffect(() => {
     if (updateError) {
       if ("data" in updateError) {
@@ -57,7 +82,7 @@ const AllCourses: FC<Props> = ({ isTeam }) => {
         toast.error(errorMessage.data.message);
       }
     }
-  }, [updateError, isSuccess, deleteSuccess, deleteError]);
+  }, [updateError, isSuccess, deleteSuccess, deleteError, refetch]);
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.3 },

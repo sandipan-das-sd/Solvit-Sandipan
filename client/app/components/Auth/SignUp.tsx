@@ -29,6 +29,19 @@ const Signup: FC<Props> = ({ setRoute }) => {
   const [show, setShow] = useState(false);
   const [register, { data, error, isSuccess }] = useRegisterMutation();
 
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     const message = data?.message || "Registration successful";
+  //     toast.success(message);
+  //     setRoute("Verification");
+  //   }
+  //   if (error) {
+  //     if ("data" in error) {
+  //       const errorData = error as any;
+  //       toast.error(errorData.data.message);
+  //     }
+  //   }
+  // }, [isSuccess, error]);
   useEffect(() => {
     if (isSuccess) {
       const message = data?.message || "Registration successful";
@@ -41,7 +54,8 @@ const Signup: FC<Props> = ({ setRoute }) => {
         toast.error(errorData.data.message);
       }
     }
-  }, [isSuccess, error]);
+  }, [isSuccess, error, data?.message, setRoute]);
+
 
   const formik = useFormik({
     initialValues: { name: "", email: "", password: "" },

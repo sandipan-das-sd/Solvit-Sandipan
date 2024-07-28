@@ -21,6 +21,21 @@ const Verification: FC<Props> = ({ setRoute }) => {
   const [activation, { isSuccess, error }] = useActivationMutation();
   const [invalidError, setInvalidError] = useState<boolean>(false);
 
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     toast.success("Account activated successfully");
+  //     setRoute("Login");
+  //   }
+  //   if (error) {
+  //     if ("data" in error) {
+  //       const errorData = error as any;
+  //       toast.error(errorData.data.message);
+  //       setInvalidError(true);
+  //     } else {
+  //       console.log("An error occured:", error);
+  //     }
+  //   }
+  // }, [isSuccess, error]);
   useEffect(() => {
     if (isSuccess) {
       toast.success("Account activated successfully");
@@ -32,10 +47,11 @@ const Verification: FC<Props> = ({ setRoute }) => {
         toast.error(errorData.data.message);
         setInvalidError(true);
       } else {
-        console.log("An error occured:", error);
+        console.log("An error occurred:", error);
       }
     }
-  }, [isSuccess, error]);
+  }, [isSuccess, error, setRoute]); // Added `setRoute` to the dependency array
+
 
   const inputRefs = [
     useRef<HTMLInputElement>(null),
