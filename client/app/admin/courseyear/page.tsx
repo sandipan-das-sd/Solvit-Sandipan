@@ -5,7 +5,7 @@ import Heading from "@/app/utils/Heading";
 import React from "react";
 import AdminSidebar from "../../components/Admin/Sidebar/AdminSidebar";
 import EditCategories from "../../components/Admin/Customization/EditCategories";
-import EditYear from "../../components/Admin/Customization/EditYear";
+// import EditYear from "../../components/Admin/Customization/EditYear";
 
 type Props = {};
 
@@ -24,7 +24,7 @@ const page = (props: Props) => {
         </div>
         <div className="w-[85%]">
           <DashboardHero />
-          <EditYear />
+          {/* <EditYear /> */}
         </div>
       </div>
       {/* </AdminProtected> */}
