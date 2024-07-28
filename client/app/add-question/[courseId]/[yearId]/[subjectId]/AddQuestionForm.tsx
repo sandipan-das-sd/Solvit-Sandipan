@@ -5,6 +5,7 @@
 // import React, { useState } from 'react';
 // import Modal from 'react-modal';
 // import { ToastContainer, toast } from 'react-toastify';
+// import { IQuestion } from '../../../../../../server/models/course.model';
 // import 'react-toastify/dist/ReactToastify.css';
 // import './AddQuestion.css';
 // import {
@@ -290,19 +291,19 @@
 //                             </tr>
 //                         </thead>
 //                         <tbody>
-//                             {questionsData?.questions.map((question, index) => (
+//                             {questionsData?.questions.map((question:IQuestion, index:number) => (
 //                                 <tr key={question._id} className="even:bg-gray-50">
 //                                     <td className="border px-4 py-2">{index + 1}</td>
-//                                     <td className="border px-4 py-2">{question.questionText}</td>
+//                                     <td className="border px-4 py-2">{question.questionText }</td>
 //                                     <td className="border px-4 py-2">
 //                                         {question.questionImage?.url && (
-//                                             <img src={question.questionImage.url} alt="Question" className="h-18  w-24 object-cover" />
+//                                             <img src={question.questionImage.url as string} alt="Question" className="h-18  w-24 object-cover" />
 //                                         )}
 //                                     </td>
 //                                     <td className="border px-4 py-2">{question.answerText}</td>
 //                                     <td className="border px-4 py-2">
 //                                         {question.answerImage?.url && (
-//                                             <img src={question.answerImage.url} alt="Answer" className="h-16 w-16 object-cover" />
+//                                             <img src={question.answerImage.url as string} alt="Answer" className="h-16 w-16 object-cover" />
 //                                         )}
 //                                     </td>
 //                                     <td className="border px-4 py-2">
