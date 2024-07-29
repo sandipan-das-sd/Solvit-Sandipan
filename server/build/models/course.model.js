@@ -214,70 +214,109 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const questionSchema = new mongoose_1.Schema({
     _id: { type: mongoose_1.Schema.Types.ObjectId, auto: true }, // Use Schema.Types.ObjectId
-    questionText: { type: String, required: true }, // Add required: true if needed
+    questionText: { type: String }, // Add required: true if needed
     questionImage: {
-        url: { type: String, required: true },
-        public_id: { type: String, required: true },
+        url: { type: String },
+        public_id: { type: String },
     },
-    answerText: { type: String, required: true },
+    answerText: { type: String },
     answerImage: {
-        url: { type: String, required: true },
-        public_id: { type: String, required: true },
+        url: { type: String },
+        public_id: { type: String },
     },
     videoLink: { type: String },
     videoId: { type: String },
 });
 const subjectSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
+    name: { type: String },
     questions: [questionSchema],
 });
 const yearSchema = new mongoose_1.Schema({
-    year: { type: Number, required: true },
+    year: { type: Number },
     subjects: [subjectSchema],
 });
 const commentSchema = new mongoose_1.Schema({
-    user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
-    question: { type: String, required: true },
-    questionReplies: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Comment' }],
+    user: Object,
+    question: String,
+    questionReplies: [Object],
 }, { timestamps: true });
 const reviewSchema = new mongoose_1.Schema({
-    user: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
-    rating: { type: Number, default: 0 },
-    comment: { type: String, required: true },
-    commentReplies: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Review' }],
+    user: Object,
+    rating: {
+        type: Number,
+        default: 0,
+    },
+    comment: String,
+    commentReplies: [Object],
 }, { timestamps: true });
 const linkSchema = new mongoose_1.Schema({
-    title: { type: String, required: true },
-    url: { type: String, required: true },
+    title: String,
+    url: String,
 });
 const courseDataSchema = new mongoose_1.Schema({
-    videoUrl: { type: String, required: true },
-    videoThumbnail: { type: Object, required: true },
-    title: { type: String, required: true },
-    videoSection: { type: String, required: true },
-    description: { type: String, required: true },
-    videoLength: { type: Number, required: true },
-    videoPlayer: { type: String, required: true },
+    videoUrl: String,
+    videoThumbnail: Object,
+    title: String,
+    videoSection: String,
+    description: String,
+    videoLength: Number,
+    videoPlayer: String,
     links: [linkSchema],
-    suggestion: { type: String, required: true },
+    suggestion: String,
     questions: [commentSchema],
 });
 const courseSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    categories: { type: String, required: true },
-    price: { type: Number, required: true },
-    estimatedPrice: { type: Number },
-    thumbnail: { type: Object, required: true },
-    tags: { type: String, required: true },
-    level: { type: String, required: true },
-    demoUrl: { type: String, required: true },
-    benefits: [{ title: { type: String, required: true } }],
-    prerequisites: [{ title: { type: String, required: true } }],
+    name: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    categories: {
+        type: String,
+        required: true,
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    estimatedPrice: {
+        type: Number,
+    },
+    thumbnail: {
+        public_id: {
+            type: String,
+        },
+        url: {
+            type: String,
+        },
+    },
+    tags: {
+        type: String,
+        required: true,
+    },
+    level: {
+        type: String,
+        required: true,
+    },
+    demoUrl: {
+        type: String,
+        required: true,
+    },
+    benefits: [{ title: String }],
+    prerequisites: [{ title: String }],
     reviews: [reviewSchema],
     courseData: [courseDataSchema],
-    ratings: { type: Number, default: 0 },
-    purchased: { type: Number, default: 0 },
+    ratings: {
+        type: Number,
+        default: 0,
+    },
+    purchased: {
+        type: Number,
+        default: 0,
+    },
     years: [yearSchema],
 }, { timestamps: true });
 const CourseModel = mongoose_1.default.model("Course", courseSchema);

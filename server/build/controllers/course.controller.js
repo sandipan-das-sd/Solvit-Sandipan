@@ -554,8 +554,8 @@ exports.AddQuestToSubject = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
         if (!subject) {
             return res.status(404).json({ success: false, message: `Subject not found with ID: ${subjectId}` });
         }
+        // Create a new question document using the Question model
         const newQuestion = {
-            _id: new mongoose_1.default.Types.ObjectId(), // Ensure the _id is generated
             questionText,
             questionImage: {
                 url: questionImageUrl || '',
@@ -569,7 +569,7 @@ exports.AddQuestToSubject = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, 
             videoLink,
             videoId,
         };
-        subject.questions.push(newQuestion);
+        subject.questions.push(newQuestion); // Casting to `any` to bypass TypeScript error
         await course.save();
         res.status(201).json({
             success: true,
