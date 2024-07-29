@@ -28,6 +28,8 @@ app.use(fileUpload({
 app.use(
     cors({
         origin: ["https://solvit-sandipan-n6d9.vercel.app'"],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
     })
 );
