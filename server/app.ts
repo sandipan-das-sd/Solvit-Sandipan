@@ -27,7 +27,7 @@ app.use(fileUpload({
 }));
 app.use(
     cors({
-        origin: ['http://localhost:3000'],
+        origin: ['https://solvit-sandipan-n6d9.vercel.app'],
         credentials: true,
     })
 );
