@@ -88,39 +88,6 @@ export const uploadCourse = CatchAsyncError(
 
 // Adding a Year to a Course Main
 
-// export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const courseId = req.params.courseId;
-//     const { year } = req.body;
-
-//     if (!courseId || !year) {
-//       return res.status(400).json({ success: false, message: 'Course ID and year are required' });
-//     }
-
-//     const course = await CourseModel.findById(courseId);
-//     if (!course) {
-//       return res.status(404).json({ success: false, message: 'Course not found' });
-//     }
-
-//     // Check if year already exists
-//     const yearExists = course.years.some(y => y.year === year);
-//     if (yearExists) {
-//       return res.status(400).json({ success: false, message: 'Year already exists' });
-//     }
-
-//     // Add the new year
-//     course.years.push({ year, subjects: [] });
-//     await course.save();
-
-//     res.status(201).json({ success: true, course });
-//   } catch (error: any) {
-//     return next(new ErrorHandler(error.message, 500));
-//   }
-// })
-
-
-
-//adding year to a course
 export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const courseId = req.params.courseId;
@@ -135,22 +102,54 @@ export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Respons
       return res.status(404).json({ success: false, message: 'Course not found' });
     }
 
+    // Check if year already exists
     const yearExists = course.years.some(y => y.year === year);
     if (yearExists) {
       return res.status(400).json({ success: false, message: 'Year already exists' });
     }
 
-    const newYear: IYear = new mongoose.Types.ObjectId() as any;
-    Object.assign(newYear, { year, subjects: [] });
-
-    course.years.push(newYear);
+    // Add the new year
+    course.years.push({ year, subjects: [] });
     await course.save();
 
     res.status(201).json({ success: true, course });
   } catch (error: any) {
     return next(new ErrorHandler(error.message, 500));
   }
-});
+})
+
+
+// //adding year to a course
+// export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const courseId = req.params.courseId;
+//     const { year } = req.body;
+
+//     if (!courseId || !year) {
+//       return res.status(400).json({ success: false, message: 'Course ID and year are required' });
+//     }
+
+//     const course = await CourseModel.findById(courseId);
+//     if (!course) {
+//       return res.status(404).json({ success: false, message: 'Course not found' });
+//     }
+
+//     const yearExists = course.years.some(y => y.year === year);
+//     if (yearExists) {
+//       return res.status(400).json({ success: false, message: 'Year already exists' });
+//     }
+
+//     const newYear: IYear = new mongoose.Types.ObjectId() as any;
+//     Object.assign(newYear, { year, subjects: [] });
+
+//     course.years.push(newYear);
+//     await course.save();
+
+//     res.status(201).json({ success: true, course });
+//   } catch (error: any) {
+//     return next(new ErrorHandler(error.message, 500));
+//   }
+// });
 //get the year
 export const GetYearsOfCourse = async (req: Request, res: Response, next: NextFunction) => {
   try {

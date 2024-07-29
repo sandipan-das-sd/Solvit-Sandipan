@@ -184,7 +184,8 @@ export interface IQuestion extends Document {
 }
 
 export interface ISubject extends Document {
-_id:string,
+  // _id:string,
+  _id: mongoose.Types.ObjectId,
   name: string;
   questions: IQuestion[];
 }
