@@ -29,7 +29,9 @@ exports.app.use((0, express_fileupload_1.default)({
     tempFileDir: '/tmp/'
 }));
 exports.app.use((0, cors_1.default)({
-    origin: ["https://solvit-sandipan-n6d9.vercel.app'"],
+    origin: ["https://solvit-client.vercel.app"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
 // app.use(cors({ origin: process.env.ORIGIN, credentials: true, }))
