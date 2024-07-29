@@ -1,5 +1,35 @@
+
 // import mongoose, { Document, Model, Schema } from "mongoose";
 // import { IUser } from "./user.model";
+// export interface IQuestion extends Document {
+//   _id: mongoose.Types.ObjectId;
+//   questionText: string; // Changed to lowercase
+//   questionImage: {
+//     url: string; // Changed to lowercase
+//     public_id: string; // Changed to lowercase
+//   };
+//   answerText: string; // Changed to lowercase
+//   answerImage: {
+//     url: string; // Changed to lowercase
+//     public_id: string; // Changed to lowercase
+//   };
+//   videoLink?: string;
+//   videoId?: string | null;
+ 
+// }
+
+// export interface ISubject extends Document {
+//   // _id:string,
+//   _id: mongoose.Types.ObjectId,
+//   name: string;
+//   questions: IQuestion[];
+// }
+
+// export interface IYear extends Document {
+//   _id: mongoose.Types.ObjectId;
+//   year: number;
+//   subjects: ISubject[];
+// }
 
 // export interface IComment extends Document {
 //   user: IUser;
@@ -32,7 +62,8 @@
 //   questions: IComment[];
 // }
 
-//  export interface ICourse extends Document {
+// export interface ICourse extends Document {
+//   _id: string;
 //   name: string;
 //   description: string;
 //   categories: string;
@@ -48,7 +79,48 @@
 //   courseData: ICourseData[];
 //   ratings?: number;
 //   purchased: number;
+//   years: IYear[];
 // }
+
+
+// const questionSchema = new Schema<IQuestion>({
+//   _id: mongoose.Types.ObjectId,
+//   questionText: String,
+//   questionImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   answerText: String,
+//   answerImage: {
+//     url: String,
+//     public_id: String,
+//   },
+//   videoLink: String,
+//   videoId: String,
+  
+// });
+
+// const subjectSchema = new Schema<ISubject>({
+//   name: {
+//     type: String,
+    
+//   },
+//   questions: [questionSchema],
+// });
+
+// const yearSchema = new Schema<IYear>({
+//   year: {
+//     type: Number,
+//     required: true,
+//   },
+//   subjects: [subjectSchema],
+// });
+
+// const commentSchema = new Schema<IComment>({
+//   user: Object,
+//   question: String,
+//   questionReplies: [Object],
+// }, { timestamps: true });
 
 // const reviewSchema = new Schema<IReview>({
 //   user: Object,
@@ -58,22 +130,16 @@
 //   },
 //   comment: String,
 //   commentReplies: [Object],
-// },{timestamps:true});
+// }, { timestamps: true });
 
 // const linkSchema = new Schema<ILink>({
 //   title: String,
 //   url: String,
 // });
 
-// const commentSchema = new Schema<IComment>({
-//   user: Object,
-//   question: String,
-//   questionReplies: [Object],
-// },{timestamps:true});
-
 // const courseDataSchema = new Schema<ICourseData>({
 //   videoUrl: String,
-//   videoThumbnail:Object,
+//   videoThumbnail: Object,
 //   title: String,
 //   videoSection: String,
 //   description: String,
@@ -93,8 +159,8 @@
 //     type: String,
 //     required: true,
 //   },
-//   categories:{
-//     type:String,
+//   categories: {
+//     type: String,
 //     required: true,
 //   },
 //   price: {
@@ -112,32 +178,32 @@
 //       type: String,
 //     },
 //   },
-//   tags:{
+//   tags: {
 //     type: String,
 //     required: true,
 //   },
-//   level:{
+//   level: {
 //     type: String,
 //     required: true,
 //   },
-//   demoUrl:{
+//   demoUrl: {
 //     type: String,
 //     required: true,
 //   },
-//   benefits: [{title: String}],
-//   prerequisites: [{title: String}],
+//   benefits: [{ title: String }],
+//   prerequisites: [{ title: String }],
 //   reviews: [reviewSchema],
-//    courseData: [courseDataSchema],
-//    ratings:{
-//      type: Number,
-//      default: 0,
-//    },
-//    purchased:{
+//   courseData: [courseDataSchema],
+//   ratings: {
 //     type: Number,
 //     default: 0,
-//    },
-// },{timestamps: true});
-
+//   },
+//   purchased: {
+//     type: Number,
+//     default: 0,
+//   },
+//   years: [yearSchema],
+// }, { timestamps: true });
 
 // const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
@@ -145,47 +211,28 @@
 
 
 
-// Interfaces
-
-// export interface IQuestion extends Document {
-//   _id: mongoose.Types.ObjectId;
-//   questionText: String,
-//   questionImage: {
-//     url: String,
-//     public_id: String,
-//   },
-//   answerText: String,
-//   answerImage: {
-//     url: String,
-//     public_id: String,
-//   },
-//   videoLink?: string;
-//   videoId?: string; // Extracted video ID
-//   order: Number,
-// }
 
 import mongoose, { Document, Model, Schema } from "mongoose";
 import { IUser } from "./user.model";
+
 export interface IQuestion extends Document {
   _id: mongoose.Types.ObjectId;
-  questionText: string; // Changed to lowercase
+  questionText: string;
   questionImage: {
-    url: string; // Changed to lowercase
-    public_id: string; // Changed to lowercase
+    url: string;
+    public_id: string;
   };
-  answerText: string; // Changed to lowercase
+  answerText: string;
   answerImage: {
-    url: string; // Changed to lowercase
-    public_id: string; // Changed to lowercase
+    url: string;
+    public_id: string;
   };
   videoLink?: string;
-  videoId?: string;
-  order: number; // Changed to lowercase
+  videoId?: string | null;
 }
 
 export interface ISubject extends Document {
-  // _id:string,
-  _id: mongoose.Types.ObjectId,
+  _id: mongoose.Types.ObjectId;
   name: string;
   questions: IQuestion[];
 }
@@ -228,7 +275,7 @@ interface ICourseData extends Document {
 }
 
 export interface ICourse extends Document {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
   name: string;
   description: string;
   categories: string;
@@ -247,45 +294,40 @@ export interface ICourse extends Document {
   years: IYear[];
 }
 
-
 const questionSchema = new Schema<IQuestion>({
-  _id: mongoose.Types.ObjectId,
-  questionText: String,
+  _id: { type: Schema.Types.ObjectId, auto: true }, // Use Schema.Types.ObjectId
+  questionText: { type: String}, // Add required: true if needed
   questionImage: {
-    url: String,
-    public_id: String,
+    url: { type: String},
+    public_id: { type: String},
   },
-  answerText: String,
+  answerText: { type: String},
   answerImage: {
-    url: String,
-    public_id: String,
+    url: { type: String},
+    public_id: { type: String},
   },
-  videoLink: String,
-  videoId: String,
-  order: Number,
+  videoLink: { type: String },
+  videoId: { type: String },
 });
 
 const subjectSchema = new Schema<ISubject>({
-  name: {
-    type: String,
-    
-  },
+  name: { type: String },
   questions: [questionSchema],
 });
 
 const yearSchema = new Schema<IYear>({
-  year: {
-    type: Number,
-    required: true,
-  },
+  year: { type: Number },
   subjects: [subjectSchema],
 });
+
 
 const commentSchema = new Schema<IComment>({
   user: Object,
   question: String,
   questionReplies: [Object],
 }, { timestamps: true });
+
+
 
 const reviewSchema = new Schema<IReview>({
   user: Object,
@@ -297,10 +339,16 @@ const reviewSchema = new Schema<IReview>({
   commentReplies: [Object],
 }, { timestamps: true });
 
+
+
+
 const linkSchema = new Schema<ILink>({
   title: String,
   url: String,
 });
+
+
+
 
 const courseDataSchema = new Schema<ICourseData>({
   videoUrl: String,
@@ -314,6 +362,10 @@ const courseDataSchema = new Schema<ICourseData>({
   suggestion: String,
   questions: [commentSchema],
 });
+
+
+
+
 
 const courseSchema = new Schema<ICourse>({
   name: {
@@ -373,9 +425,5 @@ const courseSchema = new Schema<ICourse>({
 const CourseModel: Model<ICourse> = mongoose.model("Course", courseSchema);
 
 export default CourseModel;
-
-
-
-
 
 

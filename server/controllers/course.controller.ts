@@ -46,7 +46,6 @@ const extractVideoId = (url: string): string | null => {
 
 
 
-
 export const uploadCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -88,35 +87,52 @@ export const uploadCourse = CatchAsyncError(
 
 // Adding a Year to a Course Main
 
-export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+// export const AddYeartoCourse = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const courseId = req.params.courseId;
+//     const { year } = req.body;
+
+//     if (!courseId || !year) {
+//       return res.status(400).json({ success: false, message: 'Course ID and year are required' });
+//     }
+
+//     const course = await CourseModel.findById(courseId);
+//     if (!course) {
+//       return res.status(404).json({ success: false, message: 'Course not found' });
+//     }
+
+//     // Check if year already exists
+//     const yearExists = course.years.some(y => y.year === year);
+//     if (yearExists) {
+//       return res.status(400).json({ success: false, message: 'Year already exists' });
+//     }
+
+//     // Add the new year
+//     course.years.push({ year, subjects: [] });
+//     await course.save();
+
+//     res.status(201).json({ success: true, course });
+//   } catch (error: any) {
+//     return next(new ErrorHandler(error.message, 500));
+//   }
+// })
+export const AddYeartoCourse = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const courseId = req.params.courseId;
-    const { year } = req.body;
-
-    if (!courseId || !year) {
-      return res.status(400).json({ success: false, message: 'Course ID and year are required' });
-    }
-
-    const course = await CourseModel.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
-
-    // Check if year already exists
-    const yearExists = course.years.some(y => y.year === year);
-    if (yearExists) {
-      return res.status(400).json({ success: false, message: 'Year already exists' });
-    }
-
-    // Add the new year
-    course.years.push({ year, subjects: [] });
+    const { year, subjects } = req.body;
+    const newYear = { year, subjects }; // Ensure this matches IYear
+    const course = await CourseModel.findById(req.params.courseId);
+    if (!course) return res.status(404).send('Course not found');
+    course.years.push(newYear as any); // Cast to 'any' if TypeScript complains
     await course.save();
-
-    res.status(201).json({ success: true, course });
-  } catch (error: any) {
-    return next(new ErrorHandler(error.message, 500));
+    res.status(201).json(course);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).send(error.message);
+    } else {
+      res.status(500).send('An unknown error occurred');
+    }
   }
-})
+};
 
 
 // //adding year to a course
@@ -627,20 +643,16 @@ export const GetAllSubjects = CatchAsyncError(async (req: Request, res: Response
 //   }
 // });
 
-
-
-
 export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId, yearId, subjectId } = req.params;
     const { questionText, answerText, videoLink } = req.body;
-    const files = req.files as FileArray; // Type the files object
-    const questionImage = files?.questionImage;
-    const answerImage = files?.answerImage;
+    const questionImage = req.files?.questionImage;
+    const answerImage = req.files?.answerImage;
 
     let questionImageUrl: string | null = null;
     let questionImagePublicId: string | null = null;
-    if (questionImage && (questionImage as any).tempFilePath) {
+    if (questionImage) {
       const result = await cloudinary.v2.uploader.upload((questionImage as any).tempFilePath, {
         folder: 'questions',
       });
@@ -650,7 +662,7 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
 
     let answerImageUrl: string | null = null;
     let answerImagePublicId: string | null = null;
-    if (answerImage && (answerImage as any).tempFilePath) {
+    if (answerImage) {
       const result = await cloudinary.v2.uploader.upload((answerImage as any).tempFilePath, {
         folder: 'answers',
       });
@@ -682,9 +694,8 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
       return res.status(404).json({ success: false, message: `Subject not found with ID: ${subjectId}` });
     }
 
-    // Create new question
-    const newQuestion: IQuestion = {
-      _id: new mongoose.Types.ObjectId(), // Optional: Generate a new ObjectId if necessary
+    // Create a new question document using the Question model
+    const newQuestion = {
       questionText,
       questionImage: {
         url: questionImageUrl || '',
@@ -697,10 +708,10 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
       },
       videoLink,
       videoId,
-      order: 0, // You may need to set this to a meaningful value
     };
 
-    subject.questions.push(newQuestion);
+    subject.questions.push(newQuestion as any); // Casting to `any` to bypass TypeScript error
+
     await course.save();
 
     res.status(201).json({
@@ -718,6 +729,95 @@ export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Respo
   }
 });
 
+// export const AddQuestToSubject = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { courseId, yearId, subjectId } = req.params;
+//     const { questionText, answerText, videoLink } = req.body;
+//     const files = req.files as FileArray;
+//     const questionImage = files?.questionImage;
+//     const answerImage = files?.answerImage;
+
+//     let questionImageUrl: string | null = null;
+//     let questionImagePublicId: string | null = null;
+//     if (questionImage && (questionImage as any).tempFilePath) {
+//       const result = await cloudinary.v2.uploader.upload((questionImage as any).tempFilePath, {
+//         folder: 'questions',
+//       });
+//       questionImageUrl = result.secure_url;
+//       questionImagePublicId = result.public_id;
+//     }
+
+//     let answerImageUrl: string | null = null;
+//     let answerImagePublicId: string | null = null;
+//     if (answerImage && (answerImage as any).tempFilePath) {
+//       const result = await cloudinary.v2.uploader.upload((answerImage as any).tempFilePath, {
+//         folder: 'answers',
+//       });
+//       answerImageUrl = result.secure_url;
+//       answerImagePublicId = result.public_id;
+//     }
+
+//     const videoId = videoLink ? extractVideoId(videoLink) : null;
+
+//     const course = await CourseModel.findById(courseId)
+//       .populate({
+//         path: 'years.subjects',
+//         populate: {
+//           path: 'questions'
+//         }
+//       });
+
+//     if (!course) {
+//       return res.status(404).json({ success: false, message: "Course not found" });
+//     }
+
+//     const year = (course.years as IYear[]).find(y => y._id.toString() === yearId);
+//     if (!year) {
+//       return res.status(404).json({ success: false, message: "Year not found" });
+//     }
+
+//     const subject = (year.subjects as ISubject[]).find(sub => sub._id.toString() === subjectId);
+//     if (!subject) {
+//       return res.status(404).json({ success: false, message: `Subject not found with ID: ${subjectId}` });
+//     }
+
+//     // Create and add new question
+//     const newQuestion = {
+//       questionText,
+//       questionImage: {
+//         url: questionImageUrl || '',
+//         public_id: questionImagePublicId || '',
+//       },
+//       answerText,
+//       answerImage: {
+//         url: answerImageUrl || '',
+//         public_id: answerImagePublicId || '',
+//       },
+//       videoLink,
+//       videoId: videoId || undefined,
+//       order: 0,
+//     };
+
+//     subject.questions.push(newQuestion as any);
+//     await course.save();
+
+
+  
+
+//     res.status(201).json({
+//       success: true,
+//       course,
+//       uploadedImages: {
+//         question: questionImageUrl || null,
+//         answers: answerImageUrl || null
+//       }
+//     });
+
+//   } catch (error: any) {
+//     console.error(error);
+//     return next(new ErrorHandler(error.message, 500));
+//   }
+// });
 
 
 export const GetQuestions = CatchAsyncError(async (req: Request, res: Response, next: NextFunction) => {
