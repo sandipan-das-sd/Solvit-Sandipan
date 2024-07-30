@@ -27,7 +27,7 @@ app.use(fileUpload({
 }));
 app.use(
     cors({
-        origin: ["https://solvit-client.vercel.app"],
+        origin: "*",
         methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
